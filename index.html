@@ -9,7 +9,6 @@
 
     <style>
         :root {
-            /* DEFAULT THEME */
             --bg-color: #1a1a1a;       
             --sidebar-bg: #212121;     
             --card-bg: #2a2a2a;        
@@ -22,7 +21,6 @@
             --border: #404040;         
         }
 
-        /* MATRIX / WATCHDOG MODE VARIABLES */
         body.matrix-mode {
             --bg-color: #000000 !important;
             --sidebar-bg: #001100 !important;
@@ -84,16 +82,6 @@
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 0;
         }
         #pass-wrapper.cloned { max-height: 150px; opacity: 1; transform: translateY(0); margin-top: 15px; }
-
-        /* ADMIN PANEL */
-        #admin-panel {
-            display: none; padding: 10px; background: #220000; border-bottom: 1px solid red;
-            text-align: center; color: red; font-weight: bold;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        body.matrix-mode #admin-panel { background: #001100; border-color: #00ff00; color: #00ff00; }
-        .user-select { background: #000; color: #fff; border: 1px solid red; padding: 5px; margin-left: 10px; }
-        body.matrix-mode .user-select { border-color: #00ff00; color: #00ff00; }
 
         /* UI ELEMENTS */
         #trail-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99990; mix-blend-mode: screen; }
@@ -179,66 +167,44 @@
         .logout-btn:hover { background: var(--danger-color); color: #fff; }
 
         /* --- CHAT SYSTEM CSS --- */
-        #chat-root {
-            position: absolute; /* Sidebar içinde relative olarak durur ama draggable olunca fixed yaparız */
-            width: 100%;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-
         .chat-box {
-            position: fixed; /* Ekran üzerinde yüzer */
-            bottom: 100px;
-            left: 20px;
-            width: 350px;
-            height: 400px;
-            background-color: var(--sidebar-bg);
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            z-index: 99999;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            transition: opacity 0.2s;
+            position: fixed; bottom: 100px; left: 20px; width: 350px; height: 400px;
+            background-color: var(--sidebar-bg); border: 1px solid var(--border);
+            display: flex; flex-direction: column; z-index: 99999;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: opacity 0.2s;
         }
 
         .chat-header {
-            background: var(--hover-bg);
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            cursor: move;
-            font-size: 0.8rem;
-            font-weight: bold;
-            display: flex; justify-content: space-between; align-items: center;
+            background: var(--hover-bg); padding: 10px; border-bottom: 1px solid var(--border);
+            cursor: move; font-size: 0.8rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center;
         }
         
         .chat-tabs {
-            display: flex;
-            overflow-x: auto;
-            background: #111;
-            border-bottom: 1px solid var(--border);
+            display: flex; overflow-x: auto; background: #111; border-bottom: 1px solid var(--border); align-items: center;
         }
         .chat-tabs::-webkit-scrollbar { height: 4px; }
         .chat-tabs::-webkit-scrollbar-thumb { background: var(--text-muted); }
 
         .chat-tab {
-            padding: 8px 12px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            border-right: 1px solid #333;
-            white-space: nowrap;
+            padding: 8px 12px; font-size: 0.75rem; cursor: pointer; color: var(--text-muted);
+            border-right: 1px solid #333; white-space: nowrap; display: flex; align-items: center; gap: 5px;
         }
         .chat-tab:hover { background: #222; color: #fff; }
         .chat-tab.active { background: var(--card-bg); color: var(--link-color); font-weight: bold; }
         .chat-tab.alert { color: var(--link-color); animation: flash 1s infinite; }
+        
+        .chat-close-btn { font-size: 0.7rem; color: #666; font-weight: normal; margin-left: 3px; }
+        .chat-close-btn:hover { color: var(--danger-color); }
+        
+        .add-tab-btn {
+            padding: 5px 10px; cursor: pointer; color: var(--link-color); font-weight: bold; font-size: 1.2rem;
+            display: grid; place-items: center;
+        }
+        .add-tab-btn:hover { text-shadow: 0 0 5px var(--link-color); }
 
         .chat-messages {
-            flex: 1;
-            padding: 10px;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            display: flex; flex-direction: column; gap: 8px;
-            background: #151515;
+            flex: 1; padding: 10px; overflow-y: auto; font-size: 0.8rem;
+            display: flex; flex-direction: column; gap: 8px; background: #151515;
         }
         .chat-messages::-webkit-scrollbar { width: 5px; }
         .chat-messages::-webkit-scrollbar-thumb { background: var(--border); }
@@ -249,20 +215,25 @@
         .msg-sender { font-size: 0.65rem; opacity: 0.6; display: block; margin-bottom: 2px; }
 
         .chat-input-area {
-            padding: 8px;
-            border-top: 1px solid var(--border);
-            display: flex; gap: 5px;
-            background: var(--sidebar-bg);
+            padding: 8px; border-top: 1px solid var(--border); display: flex; gap: 5px; background: var(--sidebar-bg);
         }
         .chat-input {
-            flex: 1; background: #000; border: 1px solid #333; color: #fff;
-            padding: 5px; font-size: 0.8rem; outline: none;
+            flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 5px; font-size: 0.8rem; outline: none;
         }
         .chat-input:focus { border-color: var(--text-main); }
         .chat-send-btn {
-            background: var(--text-main); color: #000; border: none;
-            font-weight: bold; cursor: pointer; padding: 0 10px; font-size: 0.8rem;
+            background: var(--text-main); color: #000; border: none; font-weight: bold; cursor: pointer; padding: 0 10px; font-size: 0.8rem;
         }
+
+        /* ADMIN PANEL */
+        #admin-panel {
+            display: none; padding: 10px; background: #220000; border-bottom: 1px solid red;
+            text-align: center; color: red; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        body.matrix-mode #admin-panel { background: #001100; border-color: #00ff00; color: #00ff00; }
+        .user-select { background: #000; color: #fff; border: 1px solid red; padding: 5px; margin-left: 10px; }
+        body.matrix-mode .user-select { border-color: #00ff00; color: #00ff00; }
 
         @keyframes flash { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
@@ -273,12 +244,10 @@
         <div class="login-box">
             <h2 style="margin-bottom: 10px; letter-spacing: 2px;" class="scramble-target">DEEP FOCUS</h2>
             <p style="color: #999; font-size: 0.8rem;">NOCTURNUS DEEPFOCUS</p>
-            
             <div id="id-container">
                 <input type="text" id="login-id" class="login-input" placeholder="ENTER ID">
                 <button id="id-btn" class="login-btn" onclick="checkID()">NEXT ></button>
             </div>
-
             <div id="pass-wrapper">
                 <input type="password" id="login-pass" class="login-input" placeholder="ACCESS CODE">
                 <button class="login-btn" onclick="verifyPassword()">INITIALIZE SYSTEM</button>
@@ -299,13 +268,11 @@
 
     <div id="chat-box" class="chat-box" style="display:none;">
         <div class="chat-header" id="chat-header">
-            <span>:: STUDIO COMMS ::</span>
+            <span id="chat-title">:: STUDIO COMMS ::</span>
             <span style="cursor:pointer;" onclick="toggleChat()">[X]</span>
         </div>
-        <div class="chat-tabs" id="chat-tabs">
-            </div>
-        <div class="chat-messages" id="chat-messages">
-            </div>
+        <div class="chat-tabs" id="chat-tabs"></div>
+        <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-area">
             <input type="text" class="chat-input" id="chat-input" placeholder="Message..." onkeydown="if(event.key==='Enter') sendChat()">
             <button class="chat-send-btn" onclick="sendChat()">></button>
@@ -318,12 +285,7 @@
             <span id="monthDisplay" class="scramble-target">...</span>
             <span class="nav-btn" onmouseenter="SFX.hover()" onclick="SFX.click(); changeMonth(1)">&gt;</span>
         </div>
-        <div class="calendar-grid" style="margin-bottom: 10px;">
-            <div class="day-header">PZT</div><div class="day-header">SAL</div><div class="day-header">ÇAR</div>
-            <div class="day-header">PER</div><div class="day-header">CUM</div><div class="day-header">CMT</div>
-            <div class="day-header">PAZ</div>
-        </div>
-        <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="calendar-grid" id="calendarGrid" style="margin-bottom: 10px;"></div>
         
         <div style="margin-top: auto; margin-bottom: 10px;">
             <button class="login-btn" style="margin:0; font-size:0.8rem; padding: 5px;" onclick="toggleChat()">[OPEN COMMUNICATOR]</button>
@@ -356,7 +318,7 @@
     <div class="fab" onmouseenter="SFX.hover()" onclick="SFX.confirm(); addNewTaskManual()">+</div>
 
     <script>
-        // --- 1. FIREBASE CONFIGURATION ---
+        // --- CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyCgU19zUSLVSHJSe-0umJISerM1zUR0GRk",
             authDomain: "deepfocus-f8668.firebaseapp.com",
@@ -367,7 +329,6 @@
             appId: "1:57788854023:web:b578dd1b0a6fe17f271fa2",
             measurementId: "G-MR3BMQG1E9"
         };
-
         const ADMIN_ID = "TUNA";  
         const ADMIN_PASS = "1903";  
 
@@ -379,7 +340,12 @@
         let db = { tasks: {}, calendar: {} }; 
         let selectedDate = new Date().toISOString().split('T')[0];
         let currentViewDate = new Date();
-        let currentChatChannel = 'general';
+        
+        // CHAT STATE
+        let openChatTabs = JSON.parse(localStorage.getItem('nocOpenChatTabs')) || ['general'];
+        let currentChatChannel = localStorage.getItem('nocActiveChat') || 'general';
+        let unreadCount = 0;
+        let chatListeners = {};
 
         // --- SESSION CONTROL ---
         window.onload = function() {
@@ -392,6 +358,7 @@
 
         function logout() {
             localStorage.removeItem('deepFocusUser');
+            localStorage.removeItem('nocOpenChatTabs'); // Opsiyonel: Çıkışta sekmeleri silmek istersen
             location.reload();
         }
 
@@ -403,12 +370,8 @@
             
             if(val === ADMIN_ID) {
                 input.disabled = true; 
-                const btn = document.getElementById('id-btn');
-                btn.classList.add('vanish');
-                
-                const passWrap = document.getElementById('pass-wrapper');
-                passWrap.classList.add('cloned'); 
-                
+                document.getElementById('id-btn').classList.add('vanish');
+                document.getElementById('pass-wrapper').classList.add('cloned'); 
                 setTimeout(() => document.getElementById('login-pass').focus(), 400);
                 SFX.click();
             } else {
@@ -436,113 +399,184 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.body.classList.remove('matrix-mode');
 
-            if(myID === ADMIN_ID) {
-                initAdminPanel();
-            }
-
+            if(myID === ADMIN_ID) initAdminPanel();
             listenToData(viewingID);
-            initChatSystem(); // Start chat
+            initChatSystem();
         }
 
-        // --- DATABASE SYNC ---
+        // --- DB & CHAT SYSTEM ---
         let dbRef = null;
-
         function listenToData(targetID) {
             if(dbRef) dbRef.off();
             notify(`SYNCING: ${targetID}...`);
             dbRef = database.ref('users/' + targetID);
-            
             dbRef.on('value', (snapshot) => {
                 const val = snapshot.val();
-                if(val) {
-                    db = val;
-                    if(!db.tasks) db.tasks = {};
-                    if(!db.calendar) db.calendar = {};
-                } else {
-                    db = { tasks: {}, calendar: {} };
-                }
-                // Eğer focus bir input üzerindeyse yeniden renderlamayı engelle (Input koruması)
+                db = val || { tasks: {}, calendar: {} };
+                if(!db.tasks) db.tasks = {};
+                if(!db.calendar) db.calendar = {};
                 if(document.activeElement.tagName !== 'INPUT') {
                     renderCalendar();
                     renderTasks();
                 }
             });
         }
+        function saveData() { database.ref('users/' + viewingID).set(db).catch(e => console.error(e)); }
 
-        function saveData() {
-            database.ref('users/' + viewingID).set(db).catch(e => { console.error(e); notify("SYNC ERROR!"); });
-        }
-
-        // --- CHAT SYSTEM LOGIC ---
+        // --- CHAT LOGIC ---
         function toggleChat() {
-            const chatBox = document.getElementById('chat-box');
-            if(chatBox.style.display === 'none') {
-                chatBox.style.display = 'flex';
-                // Reset Position to default if needed or just show
-                chatBox.style.bottom = '100px';
-                chatBox.style.left = '20px';
-                chatBox.style.top = 'auto';
-                chatBox.style.right = 'auto';
-                renderChatTabs();
-                loadMessages(currentChatChannel);
+            const box = document.getElementById('chat-box');
+            if(box.style.display === 'none') {
+                box.style.display = 'flex';
+                unreadCount = 0; document.title = "Noc DeepFocus"; // Reset notification
+                // Scroll to bottom
+                const msgCont = document.getElementById('chat-messages');
+                msgCont.scrollTop = msgCont.scrollHeight;
             } else {
-                chatBox.style.display = 'none';
+                box.style.display = 'none';
             }
         }
 
         function initChatSystem() {
             makeDraggable(document.getElementById('chat-box'));
             renderChatTabs();
+            // Start listening to ALL open tabs for notifications
+            openChatTabs.forEach(tabUser => setupChatListener(tabUser));
+        }
+
+        function setupChatListener(targetUser) {
+            if(chatListeners[targetUser]) return; // Already listening
+            const channelID = getChannelID(targetUser);
+            
+            // Listen for last message to trigger notifications
+            const ref = database.ref('chats/' + channelID).limitToLast(1);
+            ref.on('child_added', (snapshot) => {
+                const msg = snapshot.val();
+                if(msg && msg.timestamp > Date.now() - 2000) { // Only new messages (2s buffer)
+                    if(msg.sender !== myID) {
+                        const box = document.getElementById('chat-box');
+                        // If chat is hidden OR we are on a different tab
+                        if(box.style.display === 'none' || getChannelID(currentChatChannel) !== channelID) {
+                            handleNotification(targetUser);
+                        }
+                    }
+                }
+            });
+            chatListeners[targetUser] = ref;
+        }
+
+        function handleNotification(targetUser) {
+            SFX.notify();
+            unreadCount++;
+            document.title = `(${unreadCount}) Noc DeepFocus`;
+            // Visually alert tab
+            const tabs = document.getElementsByClassName('chat-tab');
+            for(let t of tabs) {
+                if(t.innerText.includes(targetUser === 'general' ? 'GENERAL' : targetUser)) {
+                    t.classList.add('alert');
+                }
+            }
         }
 
         function renderChatTabs() {
-            const tabsContainer = document.getElementById('chat-tabs');
-            tabsContainer.innerHTML = '';
+            const container = document.getElementById('chat-tabs');
+            container.innerHTML = '';
+            
+            openChatTabs.forEach(user => {
+                const isGen = user === 'general';
+                const label = isGen ? 'GENERAL' : user;
+                const chanID = getChannelID(user);
+                
+                const div = document.createElement('div');
+                div.className = `chat-tab ${getChannelID(currentChatChannel) === chanID ? 'active' : ''}`;
+                div.onclick = () => switchChatTab(user);
+                
+                let html = `<span>${label}</span>`;
+                if(!isGen) {
+                    html += `<span class="chat-close-btn" onclick="closeChatTab(event, '${user}')">x</span>`;
+                }
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
 
-            // General Tab
-            const genTab = createTab('GENERAL', 'general');
-            tabsContainer.appendChild(genTab);
+            // Add Tab Button
+            const addBtn = document.createElement('div');
+            addBtn.className = 'add-tab-btn';
+            addBtn.innerText = '+';
+            addBtn.onclick = openUserListModal;
+            container.appendChild(addBtn);
 
-            // Fetch other users for DM tabs
-            database.ref('users').once('value', snapshot => {
-                const users = snapshot.val() || {};
-                Object.keys(users).forEach(uid => {
-                    if(uid !== myID) {
-                        // Private channel ID: Alphabetically sorted combo of IDs
-                        const channelID = [myID, uid].sort().join('_');
-                        const tab = createTab(uid, channelID);
-                        tabsContainer.appendChild(tab);
+            loadMessages(currentChatChannel);
+        }
+
+        function switchChatTab(user) {
+            currentChatChannel = user;
+            localStorage.setItem('nocActiveChat', user);
+            renderChatTabs(); // Re-render to update active class
+            
+            // Remove alert class
+            const tabs = document.getElementsByClassName('chat-tab');
+            for(let t of tabs) { if(t.innerText.includes(user)) t.classList.remove('alert'); }
+        }
+
+        function closeChatTab(e, user) {
+            e.stopPropagation();
+            openChatTabs = openChatTabs.filter(u => u !== user);
+            localStorage.setItem('nocOpenChatTabs', JSON.stringify(openChatTabs));
+            
+            // Turn off listener
+            if(chatListeners[user]) { chatListeners[user].off(); delete chatListeners[user]; }
+
+            // If closed active tab, switch to general
+            if(currentChatChannel === user) {
+                currentChatChannel = 'general';
+                localStorage.setItem('nocActiveChat', 'general');
+            }
+            renderChatTabs();
+        }
+
+        function openUserListModal() {
+            // Fetch users to chat with
+            database.ref('users').once('value', snap => {
+                const users = snap.val() || {};
+                const userList = Object.keys(users).filter(u => u !== myID && !openChatTabs.includes(u));
+                
+                if(userList.length === 0) {
+                    notify("NO NEW USERS FOUND");
+                    return;
+                }
+
+                const buttons = userList.map(u => ({
+                    text: u,
+                    action: () => {
+                        openChatTabs.push(u);
+                        localStorage.setItem('nocOpenChatTabs', JSON.stringify(openChatTabs));
+                        setupChatListener(u);
+                        switchChatTab(u);
                     }
-                });
+                }));
+
+                openModal("NEW COMM LINK", "SELECT TARGET:", buttons);
             });
         }
 
-        function createTab(name, channelID) {
-            const div = document.createElement('div');
-            div.className = `chat-tab ${currentChatChannel === channelID ? 'active' : ''}`;
-            div.innerText = name;
-            div.onclick = () => switchChannel(channelID, div);
-            return div;
+        function getChannelID(user) {
+            if(user === 'general') return 'general';
+            return [myID, user].sort().join('_');
         }
 
-        function switchChannel(channelID, tabElement) {
-            currentChatChannel = channelID;
-            document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
-            tabElement.classList.add('active');
-            tabElement.classList.remove('alert');
-            loadMessages(channelID);
-        }
-
-        function loadMessages(channelID) {
+        function loadMessages(targetUser) {
+            const chanID = getChannelID(targetUser);
             const msgContainer = document.getElementById('chat-messages');
             msgContainer.innerHTML = '<div style="color:#555; text-align:center;">LOADING...</div>';
             
-            // Remove old listener if any (simplification)
-            database.ref('chats/' + channelID).off();
+            // Detach old main listener (not notification listeners)
+            if(window.currentMsgRef) window.currentMsgRef.off();
 
-            database.ref('chats/' + channelID).limitToLast(50).on('value', snapshot => {
+            window.currentMsgRef = database.ref('chats/' + chanID).limitToLast(50);
+            window.currentMsgRef.on('value', snap => {
                 msgContainer.innerHTML = '';
-                const msgs = snapshot.val() || {};
+                const msgs = snap.val() || {};
                 Object.values(msgs).forEach(msg => {
                     const div = document.createElement('div');
                     const isMe = msg.sender === myID;
@@ -559,331 +593,161 @@
             const text = input.value.trim();
             if(!text) return;
 
-            database.ref('chats/' + currentChatChannel).push({
-                sender: myID,
-                text: text,
-                timestamp: Date.now()
+            const chanID = getChannelID(currentChatChannel);
+            database.ref('chats/' + chanID).push({
+                sender: myID, text: text, timestamp: Date.now()
             });
             input.value = '';
             SFX.click();
         }
 
-        // Draggable Logic
         function makeDraggable(elmnt) {
-            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-            const header = document.getElementById(elmnt.id + "-header");
-            if (header) {
-                header.onmousedown = dragMouseDown;
-            }
-
-            function dragMouseDown(e) {
-                e = e || window.event;
-                e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                document.onmouseup = closeDragElement;
-                document.onmousemove = elementDrag;
-            }
-
-            function elementDrag(e) {
-                e = e || window.event;
-                e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-                elmnt.style.bottom = "auto"; // Override bottom
-            }
-
-            function closeDragElement() {
-                document.onmouseup = null;
-                document.onmousemove = null;
-            }
+            var pos1=0,pos2=0,pos3=0,pos4=0;
+            const header = document.getElementById("chat-header");
+            if(header) header.onmousedown = dragMouseDown;
+            function dragMouseDown(e) { e=e||window.event; e.preventDefault(); pos3=e.clientX; pos4=e.clientY; document.onmouseup=closeDrag; document.onmousemove=elementDrag; }
+            function elementDrag(e) { e=e||window.event; e.preventDefault(); pos1=pos3-e.clientX; pos2=pos4-e.clientY; pos3=e.clientX; pos4=e.clientY; elmnt.style.top=(elmnt.offsetTop-pos2)+"px"; elmnt.style.left=(elmnt.offsetLeft-pos1)+"px"; elmnt.style.bottom="auto"; }
+            function closeDrag() { document.onmouseup=null; document.onmousemove=null; }
         }
 
-        // --- SUBTASK FIX (SPEED UPDATE) ---
-        
+        // --- SUBTASK FIX ---
         function addSubManual(taskId) {
             if(!db.tasks[taskId].subtasks) db.tasks[taskId].subtasks = [];
-            
-            // 1. LOCAL UPDATE
             db.tasks[taskId].subtasks.push({ title: "", done: false });
-            
-            // 2. IMMEDIATE RENDER (Optimistic UI)
-            renderTasks();
-
-            // 3. FOCUS (Immediate)
-            const len = db.tasks[taskId].subtasks.length - 1;
-            const el = document.getElementById(`sub-${taskId}-${len}`);
-            if(el) el.focus();
-
-            // 4. SYNC BACKGROUND
-            saveData();
+            renderTasks(); saveData();
+            setTimeout(() => { const len = db.tasks[taskId].subtasks.length - 1; const el = document.getElementById(`sub-${taskId}-${len}`); if(el) el.focus(); }, 10);
         }
-
         function handleEnterSub(e, taskId, sIdx) {
             if(e.key === 'Enter') { 
-                e.preventDefault(); 
-                SFX.confirm(); 
-
+                e.preventDefault(); SFX.confirm(); 
                 if(!db.tasks[taskId].subtasks) db.tasks[taskId].subtasks = [];
-                
-                // 1. LOCAL UPDATE
                 db.tasks[taskId].subtasks.splice(sIdx + 1, 0, { title: "", done: false }); 
-                
-                // 2. IMMEDIATE RENDER (Bypassing Firebase roundtrip for UI)
-                renderTasks();
-
-                // 3. FOCUS IMMEDIATELY
-                const nextInputId = `sub-${taskId}-${sIdx + 1}`;
-                const el = document.getElementById(nextInputId);
-                if(el) {
-                    el.focus();
-                }
-
-                // 4. BACKGROUND SYNC
-                saveData();
+                renderTasks(); saveData();
+                setTimeout(() => { const el = document.getElementById(`sub-${taskId}-${sIdx + 1}`); if(el) el.focus(); }, 10);
             }
         }
 
         // --- ADMIN & OTHERS ---
         function initAdminPanel() {
             document.getElementById('admin-panel').style.display = 'flex';
-            database.ref('users').on('value', (snapshot) => {
-                const users = snapshot.val() || {};
+            database.ref('users').on('value', (snap) => {
+                const users = snap.val() || {};
                 const select = document.getElementById('user-selector');
                 const currentVal = select.value || viewingID;
                 select.innerHTML = `<option value="${ADMIN_ID}">MY WORKSPACE</option>`;
-                Object.keys(users).forEach(uid => {
-                    if(uid !== ADMIN_ID) {
-                        select.innerHTML += `<option value="${uid}">${uid}</option>`;
-                    }
-                });
+                Object.keys(users).forEach(uid => { if(uid !== ADMIN_ID) select.innerHTML += `<option value="${uid}">${uid}</option>`; });
                 select.value = currentVal;
             });
         }
-
-        function switchUserView(targetUser) {
-            viewingID = targetUser;
-            if(myID === ADMIN_ID && viewingID !== ADMIN_ID) {
-                toggleMatrixMode(true);
-            } else {
-                toggleMatrixMode(false);
-            }
-            listenToData(viewingID);
-            SFX.click();
-            notify(`VIEW SWITCHED: ${targetUser}`);
+        function switchUserView(target) {
+            viewingID = target;
+            toggleMatrixMode(myID === ADMIN_ID && viewingID !== ADMIN_ID);
+            listenToData(viewingID); SFX.click(); notify(`VIEW: ${target}`);
         }
-
         function deleteCurrentUser() {
-            if(viewingID === ADMIN_ID) return alert("CANNOT DELETE ADMIN!");
-            if(!confirm(`DELETE USER [${viewingID}] PERMANENTLY?`)) return;
-            database.ref('users/' + viewingID).remove()
-            .then(() => {
-                notify("USER DELETED");
-                switchUserView(ADMIN_ID);
-            });
+            if(viewingID === ADMIN_ID) return alert("NO.");
+            if(!confirm(`DELETE ${viewingID}?`)) return;
+            database.ref('users/'+viewingID).remove().then(()=>{ notify("DELETED"); switchUserView(ADMIN_ID); });
+        }
+        function toggleMatrixMode(s) {
+            const b = document.body.classList;
+            if(s) { b.add('matrix-mode'); document.querySelectorAll('.scramble-target').forEach(e=>scramble(e)); }
+            else b.remove('matrix-mode');
+        }
+        function scramble(el) {
+            const txt = el.innerText, chars="A0B1C2D3E"; let i=0;
+            const t = setInterval(()=>{ el.innerText=txt.split('').map((c,j)=>j<i?txt[j]:chars[Math.floor(Math.random()*chars.length)]).join(''); if(i>=txt.length)clearInterval(t); i+=1/2; },30);
         }
 
-        function toggleMatrixMode(state) {
-            if(state) {
-                document.body.classList.add('matrix-mode');
-                const targets = document.querySelectorAll('.scramble-target, .day-header, .date-title, #monthDisplay');
-                targets.forEach(el => scrambleText(el));
-            } else {
-                document.body.classList.remove('matrix-mode');
-            }
-        }
-        function scrambleText(element) {
-            const originalText = element.innerText;
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let iteration = 0;
-            const interval = setInterval(() => {
-                element.innerText = originalText.split("").map((letter, index) => {
-                    if(index < iteration) return originalText[index];
-                    return chars[Math.floor(Math.random() * chars.length)]
-                }).join("");
-                if(iteration >= originalText.length) clearInterval(interval);
-                iteration += 1 / 2; 
-            }, 30);
-        }
-
-        // --- RENDER LOGIC ---
+        // --- RENDER ---
         function renderTasks() {
             const d = new Date(selectedDate);
             document.getElementById('selectedDateDisplay').innerText = d.toLocaleDateString('tr-TR', { weekday: 'long' });
             document.getElementById('selectedDateSubtitle').innerText = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
             
-            const container = document.getElementById('taskContainer');
-            
-            // Save Focus State
-            const activeEl = document.activeElement;
-            const activeId = activeEl ? activeEl.id : null;
-            const cursorStart = activeEl ? activeEl.selectionStart : 0;
-            const cursorEnd = activeEl ? activeEl.selectionEnd : 0;
-
-            container.innerHTML = '';
+            const cont = document.getElementById('taskContainer');
+            const act = document.activeElement, actId = act?act.id:null, s=act?act.selectionStart:0, e=act?act.selectionEnd:0;
+            cont.innerHTML = '';
             
             const ids = db.calendar[selectedDate] || [];
-            ids.forEach((id, index) => { const task = db.tasks[id]; if(task) createTaskDOM(id, task, index); });
-
-            // Restore Focus State
-            if(activeId) {
-                const el = document.getElementById(activeId);
-                if(el) {
-                    el.focus();
-                    if(el.type === 'text') el.setSelectionRange(cursorStart, cursorEnd);
-                }
-            }
+            ids.forEach((id, idx) => { const t = db.tasks[id]; if(t) createDOM(id, t, idx); });
+            
+            if(actId) { const el=document.getElementById(actId); if(el){ el.focus(); if(el.type==='text') el.setSelectionRange(s,e); } }
         }
-
-        function createTaskDOM(id, task, index) {
-            const isLinked = Object.values(db.calendar).filter(l => l.includes(id)).length > 1;
-            const card = document.createElement('div'); card.className = `task-card ${task.done ? 'completed' : ''}`;
+        function createDOM(id, t, idx) {
+            const isLinked = Object.values(db.calendar).filter(l=>l.includes(id)).length>1;
+            const card = document.createElement('div'); card.className = `task-card ${t.done?'completed':''}`;
             card.onmouseenter = () => SFX.hover();
             card.innerHTML = `
-                ${isLinked ? '<div class="shared-badge">LINKED</div>' : ''}
+                ${isLinked?'<div class="shared-badge">LINKED</div>':''}
                 <div class="task-header">
-                    <div class="main-checkbox ${task.done ? 'checked' : ''}" onclick="SFX.click(); toggleTask('${id}')"></div>
-                    <input class="task-title-input" id="task-${id}" value="${task.title}" placeholder="TASK..." 
-                        oninput="updateTitle('${id}', this.value)" 
-                        onkeydown="handleEnterTask(event, ${index})">
+                    <div class="main-checkbox ${t.done?'checked':''}" onclick="SFX.click(); toggleTask('${id}')"></div>
+                    <input class="task-title-input" id="task-${id}" value="${t.title}" placeholder="TASK..." oninput="updTitle('${id}',this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();SFX.confirm();addNewTaskManual();}">
                     <div class="btn-group">
-                        ${isLinked ? `<button class="action-btn unlink-btn" onclick="unlinkTask('${id}', ${index})">[UNLINK]</button>` : ''}
-                        <button class="action-btn delete-btn" onclick="SFX.click(); removeTask('${id}', ${index})">[DELETE]</button>
+                        ${isLinked?`<button class="action-btn unlink-btn" onclick="unlink('${id}',${idx})">[UNLINK]</button>`:''}
+                        <button class="action-btn delete-btn" onclick="SFX.click(); removeTask('${id}',${idx})">[DELETE]</button>
                     </div>
                 </div>
                 <div class="subtask-list" id="subs-${id}"></div>
-                <div class="subtask-list" style="border:none; margin-top:5px;">
-                   <span style="font-size:0.75rem; opacity:0.6; cursor:pointer;" onclick="SFX.click(); addSubManual('${id}')">> ADD DETAIL</span>
-                </div>
+                <div class="subtask-list" style="border:none;margin-top:5px;"><span style="font-size:0.75rem;opacity:0.6;cursor:pointer;" onclick="SFX.click();addSubManual('${id}')">> ADD DETAIL</span></div>
             `;
             document.getElementById('taskContainer').appendChild(card);
-            
-            const subContainer = card.querySelector(`#subs-${id}`);
-            if(task.subtasks) {
-                task.subtasks.forEach((sub, sIdx) => {
-                    const row = document.createElement('div'); row.className = 'subtask-item';
-                    row.innerHTML = `
-                        <div class="mini-checkbox ${sub.done ? 'checked' : ''}" onclick="SFX.click(); toggleSub('${id}', ${sIdx})"></div>
-                        <input class="subtask-input" id="sub-${id}-${sIdx}" value="${sub.title}" 
-                            oninput="updateSub('${id}', ${sIdx}, this.value)"
-                            onkeydown="handleEnterSub(event, '${id}', ${sIdx})">
-                        <span class="sub-del-btn" onclick="SFX.click(); removeSubTask('${id}', ${sIdx})">[x]</span>
-                    `;
-                    subContainer.appendChild(row);
-                });
-            }
-        }
-
-        const uuid = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
-        function updateTitle(id, val) { db.tasks[id].title = val; saveData(); }
-        function addNewTaskManual() {
-            if(!myID) return;
-            const newId = uuid(); 
-            if(!db.tasks) db.tasks = {};
-            db.tasks[newId] = { title: "", done: false, subtasks: [] };
-            if(!db.calendar) db.calendar = {};
-            if(!db.calendar[selectedDate]) db.calendar[selectedDate] = []; 
-            db.calendar[selectedDate].push(newId);
-            renderTasks(); // Render first
-            saveData(); 
-            setTimeout(() => { const el = document.getElementById(`task-${newId}`); if(el) el.focus(); }, 10);
-        }
-        function handleEnterTask(e, index) { if(e.key === 'Enter') { e.preventDefault(); SFX.confirm(); addNewTaskManual(); } }
-        function updateSub(id, sIdx, val) { db.tasks[id].subtasks[sIdx].title = val; saveData(); }
-        function toggleSub(id, sIdx) { const s = db.tasks[id].subtasks[sIdx]; s.done = !s.done; saveData(); renderTasks(); }
-        function toggleTask(id) { db.tasks[id].done = !db.tasks[id].done; saveData(); renderTasks(); }
-        function removeTask(id, idx) { openModal("TERMINATE TASK", "IRREVERSIBLE.", [{ text: "[CONFIRM]", class: "btn-primary", sfx: "delete", action: () => { db.calendar[selectedDate].splice(idx, 1); const inUse = Object.values(db.calendar).some(arr => arr.includes(id)); if(!inUse) delete db.tasks[id]; SFX.delete(); saveData(); renderTasks(); notify("TASK TERMINATED"); }}]); }
-        function unlinkTask(id, idx) { openModal("BREAK LINK", "CHOOSE METHOD:", [{ text: "[ONLY TODAY]", class: "btn-link", sfx: "unlink", action: () => { db.calendar[selectedDate].splice(idx, 1); saveData(); renderTasks(); notify("LINK SEVERED"); }}, { text: "[WIPE OTHERS]", class: "btn-danger", sfx: "wipe", action: () => { removeLinksExceptCurrent(id); saveData(); renderTasks(); notify("OTHERS WIPED"); }}]); }
-        function removeLinksExceptCurrent(id) { for (const date in db.calendar) { if (date === selectedDate) continue; db.calendar[date] = db.calendar[date].filter(taskId => taskId !== id); if(db.calendar[date].length === 0) delete db.calendar[date]; } }
-        function removeSubTask(id, sIdx) { openModal("REMOVE DETAIL", "DELETE THIS LINE?", [{ text: "[DELETE]", class: "btn-primary", sfx: "delete", action: () => { db.tasks[id].subtasks.splice(sIdx, 1); SFX.delete(); saveData(); renderTasks(); notify("DETAIL REMOVED"); }}]); }
-
-        // --- CALENDAR & SFX & HELPERS ---
-        let isDragging = false, dragStart = null, dragEnd = null;
-        const calendarGrid = document.getElementById('calendarGrid');
-        const monthDisplay = document.getElementById('monthDisplay');
-        function changeMonth(offset) { currentViewDate.setMonth(currentViewDate.getMonth() + offset); renderCalendar(); }
-        function renderCalendar() {
-            calendarGrid.innerHTML = '';
-            const year = currentViewDate.getFullYear(); const month = currentViewDate.getMonth();
-            monthDisplay.innerText = currentViewDate.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
-            let firstDay = new Date(year, month, 1).getDay(); if (firstDay === 0) firstDay = 7; firstDay -= 1;
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            for (let i = 0; i < firstDay; i++) calendarGrid.appendChild(document.createElement('div'));
-            for (let i = 1; i <= daysInMonth; i++) {
-                const dayWrapper = document.createElement('div'); dayWrapper.className = 'day-wrapper';
-                const dayBox = document.createElement('div'); dayBox.className = 'day-box'; dayBox.innerText = i;
-                const currStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                dayWrapper.dataset.date = currStr;
-                if (currStr === selectedDate) dayBox.classList.add('active');
-                dayWrapper.onmouseenter = () => { SFX.hover(); if(isDragging) { dragEnd = currStr; renderDragVisuals(); } };
-                const myTasks = db.calendar[currStr] || [];
-                if (myTasks.length > 0) { const conn = document.createElement('div'); conn.className = 'connector-bar connector-single'; dayWrapper.appendChild(conn); }
-                dayWrapper.onmousedown = (e) => { SFX.click(); isDragging = true; dragStart = currStr; dragEnd = currStr; selectedDate = currStr; renderCalendar(); renderTasks(); };
-                dayWrapper.onmouseup = () => { if(isDragging) { isDragging = false; executeMirroring(); } };
-                dayWrapper.appendChild(dayBox); calendarGrid.appendChild(dayWrapper);
-            }
-        }
-        function renderDragVisuals() { document.querySelectorAll('.day-wrapper').forEach(w => { const d = w.dataset.date; if(!d) return; let s = dragStart < dragEnd ? dragStart : dragEnd; let e = dragStart > dragEnd ? dragStart : dragEnd; if (d >= s && d <= e) w.classList.add('drag-over'); else w.classList.remove('drag-over'); }); }
-        function executeMirroring() {
-            document.querySelectorAll('.day-wrapper').forEach(w => w.classList.remove('drag-over'));
-            if (!dragStart || !dragEnd || dragStart === dragEnd) return;
-            const sourceIds = db.calendar[dragStart] || []; if (sourceIds.length === 0) return;
-            let s = dragStart < dragEnd ? dragStart : dragEnd; let e = dragStart > dragEnd ? dragStart : dragEnd;
-            let current = new Date(s); const end = new Date(e);
-            while (current <= end) {
-                const dateStr = current.toISOString().split('T')[0];
-                if (dateStr !== dragStart) { if (!db.calendar[dateStr]) db.calendar[dateStr] = []; sourceIds.forEach(id => { if (!db.calendar[dateStr].includes(id)) db.calendar[dateStr].push(id); }); }
-                current.setDate(current.getDate() + 1);
-            }
-            SFX.confirm(); saveData(); renderCalendar(); notify("TIMELINE SYNCED");
-        }
-        const SFX = {
-            ctx: null,
-            init: function() { if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } if (this.ctx.state === 'suspended') { this.ctx.resume(); } },
-            playTone: function(freq, type, duration, vol=0.1) { this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime); gain.gain.setValueAtTime(vol, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration); osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + duration); },
-            hover: function() { this.playTone(800, 'sine', 0.03, 0.02); },
-            click: function() { this.playTone(1200, 'square', 0.05, 0.05); },
-            confirm: function() { this.playTone(800, 'sine', 0.1, 0.1); setTimeout(() => this.playTone(1200, 'sine', 0.1, 0.1), 50); },
-            delete: function() { this.playTone(150, 'sawtooth', 0.15, 0.08); },
-            unlink: function() { this.playTone(2000, 'triangle', 0.1, 0.05); setTimeout(() => this.playTone(500, 'square', 0.1, 0.05), 50); },
-        };
-        document.addEventListener('click', () => SFX.init(), { once: true });
-        function notify(msg) { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = `<span class="toast-prefix">[SYSTEM]:</span> ${msg}`; container.appendChild(toast); setTimeout(() => { toast.classList.add('hiding'); toast.addEventListener('animationend', () => toast.remove()); }, 3000); }
-        const canvas = document.getElementById('trail-canvas'); const ctx = canvas.getContext('2d'); let width, height;
-        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
-        window.addEventListener('resize', resize); resize();
-        let points = []; let mouse = { x: 0, y: 0 };
-        document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; points.push({ x: mouse.x, y: mouse.y, age: 1.0 }); });
-        function animateTrail() {
-            ctx.clearRect(0, 0, width, height);
-            for (let i = points.length - 1; i >= 0; i--) { points[i].age -= 0.05; if (points[i].age <= 0) points.splice(i, 1); }
-            if (points.length > 2) {
-                ctx.beginPath(); const head = points[points.length - 1]; ctx.moveTo(head.x, head.y);
-                for (let i = points.length - 2; i >= 0; i--) { const p = points[i]; const nextP = points[i+1]; const dx = nextP.x - p.x; const dy = nextP.y - p.y; const len = Math.sqrt(dx*dx + dy*dy) || 1; const nx = -dy / len; const ny = dx / len; const w = p.age * 4; ctx.lineTo(p.x + nx * w, p.y + ny * w); }
-                ctx.stroke();
-            }
-            requestAnimationFrame(animateTrail);
-        }
-        animateTrail();
-        const modalOverlay = document.getElementById('modal-overlay');
-        const modalTitle = document.getElementById('modal-title');
-        const modalDesc = document.getElementById('modal-desc');
-        const modalActions = document.getElementById('modal-actions');
-        function openModal(title, desc, buttons) {
-            SFX.click(); modalTitle.innerText = title; modalDesc.innerText = desc; modalActions.innerHTML = '';
-            const cancelBtn = document.createElement('button'); cancelBtn.className = 'modal-btn'; cancelBtn.innerText = '[CANCEL]'; cancelBtn.onclick = () => { SFX.click(); document.getElementById('modal-overlay').classList.remove('active'); setTimeout(() => { document.getElementById('modal-overlay').style.display = 'none'; }, 200); }; modalActions.appendChild(cancelBtn);
-            buttons.forEach(btn => {
-                const b = document.createElement('button'); b.className = `modal-btn ${btn.class || ''}`; b.innerText = btn.text;
-                b.onclick = () => { if(btn.sfx) SFX[btn.sfx](); else SFX.click(); if(btn.action) btn.action(); document.getElementById('modal-overlay').classList.remove('active'); setTimeout(() => { document.getElementById('modal-overlay').style.display = 'none'; }, 200); };
-                modalActions.appendChild(b);
+            const subC = card.querySelector(`#subs-${id}`);
+            if(t.subtasks) t.subtasks.forEach((sub,sIdx)=>{
+                const r = document.createElement('div'); r.className='subtask-item';
+                r.innerHTML=`<div class="mini-checkbox ${sub.done?'checked':''}" onclick="SFX.click();toggleSub('${id}',${sIdx})"></div>
+                <input class="subtask-input" id="sub-${id}-${sIdx}" value="${sub.title}" oninput="updSub('${id}',${sIdx},this.value)" onkeydown="handleEnterSub(event,'${id}',${sIdx})">
+                <span class="sub-del-btn" onclick="SFX.click();removeSub('${id}',${sIdx})">[x]</span>`;
+                subC.appendChild(r);
             });
-            document.getElementById('modal-overlay').style.display = 'flex'; setTimeout(() => document.getElementById('modal-overlay').classList.add('active'), 10);
         }
 
+        const uuid=()=>Date.now().toString(36)+Math.random().toString(36).substr(2);
+        function updTitle(id,v){db.tasks[id].title=v;saveData();}
+        function updSub(id,si,v){db.tasks[id].subtasks[si].title=v;saveData();}
+        function toggleSub(id,si){const s=db.tasks[id].subtasks[si];s.done=!s.done;saveData();renderTasks();}
+        function toggleTask(id){db.tasks[id].done=!db.tasks[id].done;saveData();renderTasks();}
+        function removeTask(id,i){ openModal("DEL","SURE?",[{text:"YES",class:"btn-primary",action:()=>{db.calendar[selectedDate].splice(i,1);if(!Object.values(db.calendar).some(a=>a.includes(id)))delete db.tasks[id];SFX.delete();saveData();renderTasks();}}]); }
+        function unlink(id,i){ openModal("UNLINK","METHOD:",[{text:"TODAY",class:"btn-link",action:()=>{db.calendar[selectedDate].splice(i,1);saveData();renderTasks();}},{text:"WIPE",class:"btn-danger",action:()=>{for(let d in db.calendar)if(d!==selectedDate)db.calendar[d]=db.calendar[d].filter(x=>x!==id);saveData();renderTasks();}}]); }
+        function removeSub(id,si){ db.tasks[id].subtasks.splice(si,1); SFX.delete(); saveData(); renderTasks(); }
+        function addNewTaskManual(){ if(!myID)return; const nid=uuid(); if(!db.tasks)db.tasks={}; db.tasks[nid]={title:"",done:false,subtasks:[]}; if(!db.calendar)db.calendar={}; if(!db.calendar[selectedDate])db.calendar[selectedDate]=[]; db.calendar[selectedDate].push(nid); renderTasks(); saveData(); setTimeout(()=>{document.getElementById(`task-${nid}`).focus()},10); }
+
+        // --- CALENDAR & HELPERS ---
+        const calendarGrid=document.getElementById('calendarGrid'), monthDisplay=document.getElementById('monthDisplay');
+        function changeMonth(o){currentViewDate.setMonth(currentViewDate.getMonth()+o);renderCalendar();}
+        function renderCalendar(){
+            calendarGrid.innerHTML=''; const y=currentViewDate.getFullYear(), m=currentViewDate.getMonth();
+            monthDisplay.innerText=currentViewDate.toLocaleString('tr-TR',{month:'long',year:'numeric'});
+            let fd=new Date(y,m,1).getDay(); if(fd===0)fd=7; fd-=1; const dim=new Date(y,m+1,0).getDate();
+            for(let i=0;i<fd;i++)calendarGrid.appendChild(document.createElement('div'));
+            for(let i=1;i<=dim;i++){
+                const w=document.createElement('div'); w.className='day-wrapper';
+                const b=document.createElement('div'); b.className='day-box'; b.innerText=i;
+                const s=`${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                w.dataset.date=s; if(s===selectedDate)b.classList.add('active');
+                if((db.calendar[s]||[]).length>0) w.innerHTML+='<div class="connector-bar connector-single"></div>';
+                w.onmousedown=()=>{selectedDate=s;renderCalendar();renderTasks();SFX.click();};
+                w.appendChild(b); calendarGrid.appendChild(w);
+            }
+        }
+        
+        const SFX={
+            ctx:null, init:function(){if(!this.ctx)this.ctx=new(window.AudioContext||window.webkitAudioContext);if(this.ctx.state==='suspended')this.ctx.resume();},
+            tone:function(f,t,d,v=0.1){this.init();const o=this.ctx.createOscillator(),g=this.ctx.createGain();o.type=t;o.frequency.setValueAtTime(f,this.ctx.currentTime);g.gain.setValueAtTime(v,this.ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,this.ctx.currentTime+d);o.connect(g);g.connect(this.ctx.destination);o.start();o.stop(this.ctx.currentTime+d);},
+            hover:function(){this.tone(800,'sine',0.03,0.02)}, click:function(){this.tone(1200,'square',0.05,0.05)}, confirm:function(){this.tone(800,'sine',0.1);setTimeout(()=>this.tone(1200,'sine',0.1),50)}, delete:function(){this.tone(150,'sawtooth',0.15)},
+            notify:function(){this.tone(1500,'sine',0.1);setTimeout(()=>this.tone(2000,'sine',0.3),100);}
+        };
+        document.addEventListener('click',()=>SFX.init(),{once:true});
+        function notify(m){const c=document.getElementById('toast-container'),t=document.createElement('div');t.className='toast';t.innerHTML=`<span class="toast-prefix">SYS:</span> ${m}`;c.appendChild(t);setTimeout(()=>t.remove(),3000);}
+        const modalOverlay=document.getElementById('modal-overlay'), mTitle=document.getElementById('modal-title'), mDesc=document.getElementById('modal-desc'), mAct=document.getElementById('modal-actions');
+        function openModal(t,d,btns){ SFX.click(); mTitle.innerText=t;mDesc.innerText=d;mAct.innerHTML=''; const c=document.createElement('button');c.className='modal-btn';c.innerText='CANCEL';c.onclick=()=>{modalOverlay.style.display='none'};mAct.appendChild(c); btns.forEach(b=>{const btn=document.createElement('button');btn.className=`modal-btn ${b.class||''}`;btn.innerText=b.text;btn.onclick=()=>{if(b.action)b.action();modalOverlay.style.display='none'};mAct.appendChild(btn);}); modalOverlay.style.display='flex'; }
+        
+        // Trail
+        const cvs=document.getElementById('trail-canvas'), cx=cvs.getContext('2d'); let w,h,pts=[];
+        function rs(){w=window.innerWidth;h=window.innerHeight;cvs.width=w;cvs.height=h;} window.addEventListener('resize',rs); rs();
+        document.addEventListener('mousemove',e=>pts.push({x:e.clientX,y:e.clientY,a:1}));
+        function anim(){ cx.clearRect(0,0,w,h); for(let i=pts.length-1;i>=0;i--){pts[i].a-=0.05;if(pts[i].a<=0)pts.splice(i,1);} if(pts.length>1){cx.beginPath();cx.moveTo(pts[pts.length-1].x,pts[pts.length-1].y); for(let i=pts.length-2;i>=0;i--){const p=pts[i]; cx.lineTo(p.x,p.y);} cx.strokeStyle=`rgba(255,255,255,0.5)`;cx.stroke();} requestAnimationFrame(anim); } anim();
+        
         renderCalendar();
     </script>
 </body>
