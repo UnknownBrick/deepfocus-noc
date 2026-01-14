@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepFocus Studio</title>
+    <title>DeepFocus Studio V3</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
@@ -21,6 +21,20 @@
             --border: #404040;         
         }
 
+        /* MATRIX / HACKER MODE VARIABLES */
+        body.matrix-mode {
+            --bg-color: #000000 !important;
+            --sidebar-bg: #051a05 !important;
+            --card-bg: #0a2a0a !important;
+            --hover-bg: #0f3a0f !important;
+            --text-main: #00ff00 !important;
+            --text-muted: #00cc00 !important;
+            --accent: #00ff00 !important;
+            --link-color: #00ff00 !important;
+            --danger-color: #00ff00 !important;
+            --border: #004400 !important;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; user-select: none; }
 
         body {
@@ -30,6 +44,7 @@
             height: 100vh;
             overflow: hidden;
             cursor: default;
+            transition: background-color 2s ease, color 2s ease; /* EFEKT GEÇİŞİ */
         }
 
         /* LOGIN SCREEN */
@@ -41,36 +56,40 @@
         .login-box {
             border: 1px solid var(--text-main); padding: 40px; text-align: center;
             box-shadow: 0 0 30px rgba(255,255,255,0.1); width: 400px;
+            background: #111;
         }
         .login-input {
             background: transparent; border: 1px solid var(--text-muted); color: #fff;
-            padding: 10px; width: 100%; margin: 20px 0; font-size: 1.2rem; text-align: center; outline: none;
+            padding: 10px; width: 100%; margin: 10px 0; font-size: 1.2rem; text-align: center; outline: none;
             text-transform: uppercase;
         }
         .login-input:focus { border-color: var(--link-color); box-shadow: 0 0 10px var(--link-color); }
         .login-btn {
-            background: var(--text-main); color: #000; border: none; padding: 10px 30px;
+            background: var(--text-main); color: #000; border: none; padding: 10px 30px; margin-top: 20px;
             font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s;
         }
         .login-btn:hover { background: #fff; transform: scale(1.05); }
 
+        /* PASSWORD FIELD (Hidden by default) */
+        #pass-container { display: none; opacity: 0; transition: opacity 0.5s; }
+        #pass-container.visible { display: block; opacity: 1; }
+
         /* ADMIN PANEL */
         #admin-panel {
-            display: none; padding: 10px; background: #330000; border-bottom: 1px solid red;
+            display: none; padding: 10px; background: #220000; border-bottom: 1px solid red;
             text-align: center; color: red; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center;
         }
+        body.matrix-mode #admin-panel { background: #002200; color: #00ff00; border-color: #00ff00; }
+
         .user-select {
             background: #000; color: #fff; border: 1px solid red; padding: 5px; margin-left: 10px;
         }
+        body.matrix-mode .user-select { border-color: #00ff00; color: #00ff00; }
 
         /* CANVAS & FX */
         #trail-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99990; mix-blend-mode: screen; }
-        .ripple {
-            position: fixed; border: 2px solid #fff; border-radius: 50%; transform: scale(0);
-            animation: rippleAnim 0.3s ease-out forwards; pointer-events: none; z-index: 99991; opacity: 1;
-        }
-        @keyframes rippleAnim { to { transform: scale(2.5); opacity: 0; border-width: 0; } }
-
+        
         /* MODAL */
         #modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -87,34 +106,22 @@
         #modal-overlay.active .modal-box { transform: scale(1); }
         .modal-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
         .modal-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.4; }
-        
         .modal-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        
-        .modal-btn {
-            padding: 10px 20px; cursor: pointer; font-weight: bold; font-size: 0.85rem;
-            border: 1px solid var(--text-muted); color: var(--text-muted); background: transparent; transition: 0.2s;
-        }
+        .modal-btn { padding: 10px 20px; cursor: pointer; font-weight: bold; font-size: 0.85rem; border: 1px solid var(--text-muted); color: var(--text-muted); background: transparent; transition: 0.2s; }
         .modal-btn:hover { border-color: var(--text-main); color: var(--text-main); transform: translateY(-2px); }
-        
         .btn-primary { border-color: var(--text-main); background: var(--text-main); color: var(--bg-color); }
-        .btn-primary:hover { background: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.4); }
-        
-        .btn-link { border-color: var(--link-color); color: var(--link-color); }
-        .btn-link:hover { background: var(--link-color); color: #000; box-shadow: 0 0 15px var(--link-color); }
-        
         .btn-danger { border-color: var(--danger-color); color: var(--danger-color); }
-        .btn-danger:hover { background: var(--danger-color); color: #fff; box-shadow: 0 0 15px var(--danger-color); }
+        .btn-danger:hover { background: var(--danger-color); color: #fff; }
 
         /* TOAST */
         #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column-reverse; gap: 10px; z-index: 100000; pointer-events: none; }
         .toast { background-color: var(--bg-color); border: 1px solid var(--text-main); color: var(--text-main); padding: 10px 20px; font-size: 0.85rem; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: toastIn 0.3s forwards; opacity: 0; display: flex; align-items: center; gap: 10px; min-width: 300px; }
         .toast.hiding { animation: toastOut 0.3s forwards; }
-        .toast-prefix { color: var(--text-muted); }
         @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes toastOut { to { transform: translateY(10px); opacity: 0; } }
 
         /* UI */
-        .sidebar { width: 300px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px; z-index: 10; position: relative; }
+        .sidebar { width: 300px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px; z-index: 10; position: relative; transition: background-color 2s ease; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
         #monthDisplay { font-size: 1rem; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 2px; }
         .nav-btn { cursor: pointer; padding: 5px 10px; font-weight: bold; color: var(--text-muted); transition: color 0.2s; }
@@ -129,18 +136,17 @@
         .connector-bar { position: absolute; bottom: 4px; height: 2px; background-color: var(--text-main); z-index: 1; }
         .connector-single { width: 4px; height: 4px; bottom: 3px; background-color: var(--text-main); }
         .conn-left { left: 0; width: 50%; } .conn-right { right: 0; width: 50%; } .conn-full { left: 0; width: 100%; } .conn-start { left: 50%; width: 50%; } .conn-end { right: 50%; width: 50%; }
-        .day-wrapper.drag-over { background-color: var(--hover-bg); border: 1px solid var(--text-main); }
 
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-color); display: flex; flex-direction: column;}
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-color); display: flex; flex-direction: column; transition: background-color 2s ease; }
         .date-title { font-size: 1.8rem; margin-bottom: 5px; font-weight: bold; color: var(--text-main); text-transform: uppercase; }
         .date-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 30px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
         .task-container { display: flex; flex-direction: column; gap: 12px; padding-bottom: 100px; }
         .task-card { background-color: var(--card-bg); border: 1px solid var(--border); padding: 18px; position: relative; transition: all 0.2s; border-radius: 4px; overflow: hidden; }
         .task-card:hover { border-color: var(--text-muted); transform: translateX(5px); }
         .task-card:focus-within { border-color: var(--text-main); background-color: #303030; }
+        body.matrix-mode .task-card:focus-within { background-color: #0f3a0f; }
+
         .shared-badge { position: absolute; top: 8px; right: 12px; font-size: 10px; color: var(--link-color); border: 1px solid var(--link-color); padding: 2px 6px; text-transform: uppercase; letter-spacing: 1px; background: var(--card-bg); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; }
-        .task-card:hover .shared-badge { transform: translateY(30px); opacity: 0.6; }
-        
         .task-header { display: flex; align-items: center; gap: 12px; position: relative; z-index: 10; }
         .main-checkbox { width: 20px; height: 20px; border: 2px solid var(--text-muted); cursor: pointer; display: grid; place-items: center; flex-shrink: 0; background: transparent; transition: 0.2s; }
         .main-checkbox:hover { border-color: var(--text-main); }
@@ -166,16 +172,28 @@
 
         .fab { position: fixed; bottom: 50px; right: 50px; width: 60px; height: 60px; background: var(--text-main); display: grid; place-items: center; font-size: 30px; color: #000; cursor: pointer; z-index: 100; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: transform 0.2s; }
         .fab:hover { transform: scale(1.1); background: #fff; }
+
+        .scramble-text { display: inline-block; min-width: 10px; }
+        .logout-btn { color: var(--danger-color); border: 1px solid var(--danger-color); padding: 5px; margin-top: 10px; font-size: 0.7rem; cursor: pointer; text-align: center; }
+        .logout-btn:hover { background: var(--danger-color); color: #fff; }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
         <div class="login-box">
-            <h2 style="margin-bottom: 10px; letter-spacing: 2px;">DEEP FOCUS</h2>
-            <p style="color: #999; font-size: 0.8rem;">NOCTURNUS STUDIO</p>
-            <input type="text" id="login-id" class="login-input" placeholder="ENTER ID">
-            <button class="login-btn" onclick="attemptLogin()">INITIALIZE SYSTEM</button>
+            <h2 style="margin-bottom: 10px; letter-spacing: 2px;" class="scramble-target">DEEP FOCUS</h2>
+            <p style="color: #999; font-size: 0.8rem;">SECURE STUDIO ACCESS</p>
+            
+            <div id="id-container">
+                <input type="text" id="login-id" class="login-input" placeholder="ENTER ID">
+                <button class="login-btn" onclick="checkID()">NEXT ></button>
+            </div>
+
+            <div id="pass-container">
+                <input type="password" id="login-pass" class="login-input" placeholder="ACCESS CODE">
+                <button class="login-btn" onclick="verifyPassword()">INITIALIZE SYSTEM</button>
+            </div>
         </div>
     </div>
 
@@ -193,7 +211,7 @@
     <aside class="sidebar">
         <div class="calendar-header">
             <span class="nav-btn" onmouseenter="SFX.hover()" onclick="SFX.click(); changeMonth(-1)">&lt;</span>
-            <span id="monthDisplay">...</span>
+            <span id="monthDisplay" class="scramble-target">...</span>
             <span class="nav-btn" onmouseenter="SFX.hover()" onclick="SFX.click(); changeMonth(1)">&gt;</span>
         </div>
         <div class="calendar-grid" style="margin-bottom: 10px;">
@@ -203,20 +221,26 @@
         </div>
         <div class="calendar-grid" id="calendarGrid"></div>
         
-        <div style="margin-top: auto; font-size: 0.7rem; color: #555; text-align: center;">
-            LOGGED AS: <span id="current-user-display" style="color: #fff;">...</span>
+        <div style="margin-top: auto;">
+            <div style="font-size: 0.7rem; color: #555; text-align: center;">
+                LOGGED AS: <span id="current-user-display" style="color: #fff;">...</span>
+            </div>
+            <div class="logout-btn" onclick="logout()">[LOGOUT]</div>
         </div>
     </aside>
 
     <main class="main-content">
-        <div id="admin-panel">
-            ⚠️ ADMIN MODE ACTIVE ⚠️
-            <select id="user-selector" class="user-select" onchange="switchUserView(this.value)">
-                <option value="">LOADING USERS...</option>
-            </select>
+        <div id="admin-panel" style="display:none;">
+            <span>⚠️ ADMIN MODE</span>
+            <div>
+                <select id="user-selector" class="user-select" onchange="switchUserView(this.value)">
+                    <option value="">LOADING USERS...</option>
+                </select>
+                <button onclick="deleteCurrentUser()" style="background:red; color:white; border:none; padding:5px; margin-left:5px; cursor:pointer; font-weight:bold;">[DELETE USER]</button>
+            </div>
         </div>
 
-        <h1 class="date-title" id="selectedDateDisplay">...</h1>
+        <h1 class="date-title scramble-target" id="selectedDateDisplay">...</h1>
         <span class="date-subtitle" id="selectedDateSubtitle">...</span>
         <div class="task-container" id="taskContainer"></div>
     </main>
@@ -224,7 +248,7 @@
     <div class="fab" onmouseenter="SFX.hover()" onclick="SFX.confirm(); addNewTaskManual()">+</div>
 
     <script>
-        // --- 1. FIREBASE CONFIGURATION ---
+        // --- 1. FIREBASE CONFIGURATION (BURAYA KENDİ KODUNU YAPIŞTIR) ---
         const firebaseConfig = {
             apiKey: "AIzaSyCgU19zUSLVSHJSe-0umJISerM1zUR0GRk",
             authDomain: "deepfocus-f8668.firebaseapp.com",
@@ -236,40 +260,112 @@
             measurementId: "G-MR3BMQG1E9"
         };
 
-        // Initialize Firebase (Compat mode)
+        // --- AYARLAR ---
+        const ADMIN_ID = "KURUCU";  // GİRİŞ ID'Sİ
+        const ADMIN_PASS = "1234";  // GİZLİ ŞİFRE
+
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         // --- GLOBAL VARIABLES ---
         let myID = null;
         let viewingID = null; 
-        
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // BURAYI KENDİ ID'İN YAP (ŞİFRE GİBİ)
-        const ADMIN_ID = "ADMIN"; 
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
         let db = { tasks: {}, calendar: {} }; 
         let selectedDate = new Date().toISOString().split('T')[0];
         let currentViewDate = new Date();
 
-        // --- LOGIN LOGIC ---
-        function attemptLogin() {
+        // --- SESSION CONTROL (AUTO LOGIN) ---
+        window.onload = function() {
+            const savedID = localStorage.getItem('deepFocusUser');
+            if(savedID) {
+                myID = savedID;
+                completeLogin(savedID, false); // False = Efekt yapma (direkt gir)
+            }
+        };
+
+        function logout() {
+            localStorage.removeItem('deepFocusUser');
+            location.reload();
+        }
+
+        // --- LOGIN FLOW ---
+        function checkID() {
             const input = document.getElementById('login-id').value.trim().toUpperCase();
-            if(!input) return alert("ID REQUIRED");
+            if(!input) return;
             
-            myID = input;
-            viewingID = input; 
+            if(input === ADMIN_ID) {
+                // Admin ise şifre sor
+                document.getElementById('id-container').style.display = 'none';
+                document.getElementById('pass-container').classList.add('visible');
+                document.getElementById('login-pass').focus();
+                SFX.click();
+            } else {
+                // Normal kullanıcı direkt girer
+                completeLogin(input, false);
+            }
+        }
+
+        function verifyPassword() {
+            const pass = document.getElementById('login-pass').value;
+            if(pass === ADMIN_PASS) {
+                SFX.confirm();
+                completeLogin(ADMIN_ID, true); // True = MATRIX EFFECT
+            } else {
+                SFX.delete();
+                alert("ACCESS DENIED");
+                location.reload();
+            }
+        }
+
+        function completeLogin(id, withEffect) {
+            myID = id;
+            viewingID = id;
+            localStorage.setItem('deepFocusUser', myID); // Şifreyi kaydet
             document.getElementById('current-user-display').innerText = myID;
-            
-            SFX.confirm();
             document.getElementById('login-overlay').style.display = 'none';
+            
+            if(withEffect) {
+                triggerMatrixEffect();
+            }
 
             if(myID === ADMIN_ID) {
                 initAdminPanel();
             }
 
             listenToData(viewingID);
+        }
+
+        // --- MATRIX EFFECT ---
+        function triggerMatrixEffect() {
+            document.body.classList.add('matrix-mode');
+            
+            // Text scramble effect
+            const targets = document.querySelectorAll('.scramble-target, .day-header, .date-title, #monthDisplay');
+            targets.forEach(el => scrambleText(el));
+
+            // 2 Saniye sonra normale dön
+            setTimeout(() => {
+                document.body.classList.remove('matrix-mode');
+                notify("SYSTEM RESTORED");
+            }, 2000);
+        }
+
+        function scrambleText(element) {
+            const originalText = element.innerText;
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+            let iteration = 0;
+            const interval = setInterval(() => {
+                element.innerText = originalText.split("")
+                    .map((letter, index) => {
+                        if(index < iteration) return originalText[index];
+                        return chars[Math.floor(Math.random() * chars.length)]
+                    })
+                    .join("");
+                
+                if(iteration >= originalText.length) clearInterval(interval);
+                iteration += 1 / 2; // Hız
+            }, 30);
         }
 
         // --- DATABASE SYNC ---
@@ -296,20 +392,17 @@
         }
 
         function saveData() {
-            database.ref('users/' + viewingID).set(db).catch(e => {
-                console.error(e);
-                notify("SYNC ERROR!");
-            });
+            database.ref('users/' + viewingID).set(db).catch(e => { console.error(e); notify("SYNC ERROR!"); });
         }
 
         // --- ADMIN FUNCTIONS ---
         function initAdminPanel() {
-            const panel = document.getElementById('admin-panel');
-            panel.style.display = 'block';
+            document.getElementById('admin-panel').style.display = 'flex';
             
             database.ref('users').on('value', (snapshot) => {
                 const users = snapshot.val() || {};
                 const select = document.getElementById('user-selector');
+                const currentVal = select.value || viewingID;
                 select.innerHTML = `<option value="${ADMIN_ID}">MY WORKSPACE</option>`;
                 
                 Object.keys(users).forEach(uid => {
@@ -317,7 +410,7 @@
                         select.innerHTML += `<option value="${uid}">${uid}</option>`;
                     }
                 });
-                select.value = viewingID;
+                select.value = currentVal;
             });
         }
 
@@ -328,67 +421,180 @@
             notify(`VIEW SWITCHED: ${targetUser}`);
         }
 
-        // --- SOUND ENGINE ---
-        const SFX = {
-            ctx: null,
-            init: function() { if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } if (this.ctx.state === 'suspended') { this.ctx.resume(); } },
-            playTone: function(freq, type, duration, vol=0.1) { this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime); gain.gain.setValueAtTime(vol, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration); osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + duration); },
-            hover: function() { this.playTone(800, 'sine', 0.03, 0.02); },
-            click: function() { this.playTone(1200, 'square', 0.05, 0.05); },
-            confirm: function() { this.playTone(800, 'sine', 0.1, 0.1); setTimeout(() => this.playTone(1200, 'sine', 0.1, 0.1), 50); },
-            delete: function() { this.playTone(150, 'sawtooth', 0.15, 0.08); },
-            unlink: function() { this.playTone(2000, 'triangle', 0.1, 0.05); setTimeout(() => this.playTone(500, 'square', 0.1, 0.05), 50); },
-            wipe: function() { this.playTone(100, 'sawtooth', 0.3, 0.1); }
-        };
-        document.addEventListener('click', () => SFX.init(), { once: true });
+        function deleteCurrentUser() {
+            if(viewingID === ADMIN_ID) return alert("CANNOT DELETE ADMIN!");
+            if(!confirm(`DELETE USER [${viewingID}] PERMANENTLY?`)) return;
 
-        // --- DYNAMIC MODAL ---
-        const modalOverlay = document.getElementById('modal-overlay');
-        const modalTitle = document.getElementById('modal-title');
-        const modalDesc = document.getElementById('modal-desc');
-        const modalActions = document.getElementById('modal-actions');
-
-        function openModal(title, desc, buttons) {
-            SFX.click();
-            modalTitle.innerText = title; modalDesc.innerText = desc; modalActions.innerHTML = '';
-            const cancelBtn = document.createElement('button'); cancelBtn.className = 'modal-btn'; cancelBtn.innerText = '[CANCEL]'; cancelBtn.onclick = () => { SFX.click(); closeModal(); }; modalActions.appendChild(cancelBtn);
-            buttons.forEach(btn => {
-                const b = document.createElement('button'); b.className = `modal-btn ${btn.class || ''}`; b.innerText = btn.text;
-                b.onclick = () => { if(btn.sfx) SFX[btn.sfx](); else SFX.click(); if(btn.action) btn.action(); closeModal(); };
-                modalActions.appendChild(b);
+            database.ref('users/' + viewingID).remove()
+            .then(() => {
+                notify("USER DELETED");
+                switchUserView(ADMIN_ID);
             });
-            modalOverlay.style.display = 'flex'; setTimeout(() => modalOverlay.classList.add('active'), 10);
         }
-        function closeModal() { modalOverlay.classList.remove('active'); setTimeout(() => { modalOverlay.style.display = 'none'; }, 200); }
 
-        // --- TOAST ---
-        function notify(msg) { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = `<span class="toast-prefix">[SYSTEM]:</span> ${msg}`; container.appendChild(toast); setTimeout(() => { toast.classList.add('hiding'); toast.addEventListener('animationend', () => toast.remove()); }, 3000); }
+        // --- FOCUS FIX & RENDER ---
+        function renderTasks() {
+            const d = new Date(selectedDate);
+            document.getElementById('selectedDateDisplay').innerText = d.toLocaleDateString('tr-TR', { weekday: 'long' });
+            document.getElementById('selectedDateSubtitle').innerText = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            
+            const container = document.getElementById('taskContainer');
+            
+            // --- FOCUS SAVER (İmleci kaybetmemek için) ---
+            const activeEl = document.activeElement;
+            const activeId = activeEl ? activeEl.id : null;
+            const cursorStart = activeEl ? activeEl.selectionStart : 0;
+            const cursorEnd = activeEl ? activeEl.selectionEnd : 0;
+            // ---------------------------------------------
 
-        // --- TRAIL ---
-        const canvas = document.getElementById('trail-canvas'); const ctx = canvas.getContext('2d'); let width, height;
-        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
-        window.addEventListener('resize', resize); resize();
-        let points = []; let mouse = { x: 0, y: 0 };
-        document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; points.push({ x: mouse.x, y: mouse.y, age: 1.0 }); });
-        function animateTrail() {
-            ctx.clearRect(0, 0, width, height);
-            for (let i = points.length - 1; i >= 0; i--) { points[i].age -= 0.05; if (points[i].age <= 0) points.splice(i, 1); }
-            if (points.length > 2) {
-                ctx.beginPath(); const head = points[points.length - 1]; ctx.moveTo(head.x, head.y);
-                for (let i = points.length - 2; i >= 0; i--) { const p = points[i]; const nextP = points[i+1]; const dx = nextP.x - p.x; const dy = nextP.y - p.y; const len = Math.sqrt(dx*dx + dy*dy) || 1; const nx = -dy / len; const ny = dx / len; const w = p.age * 4; ctx.lineTo(p.x + nx * w, p.y + ny * w); }
-                if(points[0]) ctx.lineTo(points[0].x, points[0].y);
-                for (let i = 0; i < points.length - 1; i++) { const p = points[i]; const nextP = points[i+1]; const dx = nextP.x - p.x; const dy = nextP.y - p.y; const len = Math.sqrt(dx*dx + dy*dy) || 1; const nx = -dy / len; const ny = dx / len; const w = p.age * 4; ctx.lineTo(p.x - nx * w, p.y - ny * w); }
-                ctx.lineTo(head.x, head.y); ctx.fillStyle = "rgba(255, 255, 255, 0.15)"; ctx.fill();
+            container.innerHTML = '';
+            
+            const ids = db.calendar[selectedDate] || [];
+            ids.forEach((id, index) => { const task = db.tasks[id]; if(task) createTaskDOM(id, task, index); });
+
+            // --- FOCUS RESTORE (İmleci geri yükle) ---
+            if(activeId) {
+                const el = document.getElementById(activeId);
+                if(el) {
+                    el.focus();
+                    if(el.type === 'text') el.setSelectionRange(cursorStart, cursorEnd);
+                }
             }
-            requestAnimationFrame(animateTrail);
         }
-        animateTrail();
 
-        // --- LOGIC ---
+        function createTaskDOM(id, task, index) {
+            const isLinked = Object.values(db.calendar).filter(l => l.includes(id)).length > 1;
+            const card = document.createElement('div'); card.className = `task-card ${task.done ? 'completed' : ''}`;
+            card.onmouseenter = () => SFX.hover();
+            card.innerHTML = `
+                ${isLinked ? '<div class="shared-badge">LINKED</div>' : ''}
+                <div class="task-header">
+                    <div class="main-checkbox ${task.done ? 'checked' : ''}" onclick="SFX.click(); toggleTask('${id}')"></div>
+                    <input class="task-title-input" id="task-${id}" value="${task.title}" placeholder="TASK..." 
+                        oninput="updateTitle('${id}', this.value)" 
+                        onkeydown="handleEnterTask(event, ${index})">
+                    <div class="btn-group">
+                        ${isLinked ? `<button class="action-btn unlink-btn" onclick="unlinkTask('${id}', ${index})">[UNLINK]</button>` : ''}
+                        <button class="action-btn delete-btn" onclick="SFX.click(); removeTask('${id}', ${index})">[DELETE]</button>
+                    </div>
+                </div>
+                <div class="subtask-list" id="subs-${id}"></div>
+                <div class="subtask-list" style="border:none; margin-top:5px;">
+                   <span style="font-size:0.75rem; opacity:0.6; cursor:pointer;" onclick="SFX.click(); addSubManual('${id}')">> ADD DETAIL</span>
+                </div>
+            `;
+            document.getElementById('taskContainer').appendChild(card);
+            
+            const subContainer = card.querySelector(`#subs-${id}`);
+            if(task.subtasks) {
+                task.subtasks.forEach((sub, sIdx) => {
+                    const row = document.createElement('div'); row.className = 'subtask-item';
+                    row.innerHTML = `
+                        <div class="mini-checkbox ${sub.done ? 'checked' : ''}" onclick="SFX.click(); toggleSub('${id}', ${sIdx})"></div>
+                        <input class="subtask-input" id="sub-${id}-${sIdx}" value="${sub.title}" 
+                            oninput="updateSub('${id}', ${sIdx}, this.value)"
+                            onkeydown="handleEnterSub(event, '${id}', ${sIdx})">
+                        <span class="sub-del-btn" onclick="SFX.click(); removeSubTask('${id}', ${sIdx})">[x]</span>
+                    `;
+                    subContainer.appendChild(row);
+                });
+            }
+        }
+
+        // --- DATA HANDLERS ---
+        const uuid = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
+
+        function updateTitle(id, val) { 
+            db.tasks[id].title = val; 
+            // Save data yapıyoruz ama renderTasks Firebase'den tetiklenecek
+            saveData(); 
+        }
+
+        function addNewTaskManual() {
+            if(!myID) return;
+            const newId = uuid(); 
+            if(!db.tasks) db.tasks = {};
+            db.tasks[newId] = { title: "", done: false, subtasks: [] };
+            if(!db.calendar) db.calendar = {};
+            if(!db.calendar[selectedDate]) db.calendar[selectedDate] = []; 
+            db.calendar[selectedDate].push(newId);
+            saveData(); 
+            // Yeni task eklendiğinde focus'u ona verelim (Render sonrası)
+            setTimeout(() => { 
+                const el = document.getElementById(`task-${newId}`);
+                if(el) el.focus();
+            }, 200);
+        }
+
+        function handleEnterTask(e, index) { if(e.key === 'Enter') { e.preventDefault(); SFX.confirm(); addNewTaskManual(); } }
+        
+        function addSubManual(taskId) {
+            if(!db.tasks[taskId].subtasks) db.tasks[taskId].subtasks = [];
+            db.tasks[taskId].subtasks.push({ title: "", done: false }); saveData();
+            // Focus yeni subtaska
+            setTimeout(() => { 
+                const len = db.tasks[taskId].subtasks.length - 1;
+                const el = document.getElementById(`sub-${taskId}-${len}`);
+                if(el) el.focus();
+            }, 200);
+        }
+
+        function handleEnterSub(e, taskId, sIdx) {
+            if(e.key === 'Enter') { e.preventDefault(); SFX.confirm(); 
+                if(!db.tasks[taskId].subtasks) db.tasks[taskId].subtasks = [];
+                db.tasks[taskId].subtasks.splice(sIdx + 1, 0, { title: "", done: false }); saveData();
+                setTimeout(() => { 
+                    const el = document.getElementById(`sub-${taskId}-${sIdx + 1}`);
+                    if(el) el.focus();
+                }, 200);
+            }
+        }
+
+        function updateSub(id, sIdx, val) { db.tasks[id].subtasks[sIdx].title = val; saveData(); }
+        function toggleSub(id, sIdx) { const s = db.tasks[id].subtasks[sIdx]; s.done = !s.done; saveData(); }
+        function toggleTask(id) { db.tasks[id].done = !db.tasks[id].done; saveData(); }
+        
+        function removeTask(id, idx) { 
+            openModal("TERMINATE TASK", "THIS ACTION IS IRREVERSIBLE.", [{ text: "[CONFIRM]", class: "btn-primary", sfx: "delete", action: () => {
+                db.calendar[selectedDate].splice(idx, 1);
+                const inUse = Object.values(db.calendar).some(arr => arr.includes(id));
+                if(!inUse) delete db.tasks[id];
+                SFX.delete(); saveData(); notify("TASK TERMINATED");
+            }}]);
+        }
+
+        function unlinkTask(id, idx) {
+            openModal("BREAK LINK CHAIN", "CHOOSE LINK DESTRUCTION METHOD:", [
+                { text: "[ONLY TODAY]", class: "btn-link", sfx: "unlink", action: () => {
+                    db.calendar[selectedDate].splice(idx, 1);
+                    saveData(); notify("LINK SEVERED (LOCAL)");
+                }},
+                { text: "[WIPE OTHERS]", class: "btn-danger", sfx: "wipe", action: () => {
+                    removeLinksExceptCurrent(id);
+                    saveData(); notify("OTHERS WIPED (KEPT HERE)");
+                }}
+            ]);
+        }
+
+        function removeLinksExceptCurrent(id) {
+            for (const date in db.calendar) {
+                if (date === selectedDate) continue; 
+                db.calendar[date] = db.calendar[date].filter(taskId => taskId !== id);
+                if(db.calendar[date].length === 0) delete db.calendar[date];
+            }
+        }
+
+        function removeSubTask(id, sIdx) {
+            openModal("REMOVE DETAIL", "DELETE THIS LINE?", [{ text: "[DELETE]", class: "btn-primary", sfx: "delete", action: () => {
+                db.tasks[id].subtasks.splice(sIdx, 1);
+                SFX.delete(); saveData(); notify("DETAIL REMOVED");
+            }}]);
+        }
+
+        // --- CALENDAR LOGIC (UNCHANGED) ---
         let isDragging = false, dragStart = null, dragEnd = null;
         const calendarGrid = document.getElementById('calendarGrid');
         const monthDisplay = document.getElementById('monthDisplay');
-        const uuid = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
 
         function changeMonth(offset) { currentViewDate.setMonth(currentViewDate.getMonth() + offset); renderCalendar(); }
 
@@ -405,22 +611,12 @@
                 const currStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 dayWrapper.dataset.date = currStr;
                 if (currStr === selectedDate) dayBox.classList.add('active');
-                
                 dayWrapper.onmouseenter = () => { SFX.hover(); if(isDragging) { dragEnd = currStr; renderDragVisuals(); } };
 
                 const myTasks = db.calendar[currStr] || [];
-                const d = new Date(currStr);
-                const prevD = new Date(d); prevD.setDate(d.getDate() - 1); const nextD = new Date(d); nextD.setDate(d.getDate() + 1);
-                const prevStr = prevD.toISOString().split('T')[0]; const nextStr = nextD.toISOString().split('T')[0];
-                const prevTasks = db.calendar[prevStr] || []; const nextTasks = db.calendar[nextStr] || [];
-                const linkedLeft = myTasks.some(id => prevTasks.includes(id)); const linkedRight = myTasks.some(id => nextTasks.includes(id));
                 const hasAnyTask = myTasks.length > 0;
                 if (hasAnyTask) {
-                    const conn = document.createElement('div'); conn.className = 'connector-bar';
-                    if (linkedLeft && linkedRight) conn.classList.add('conn-full');
-                    else if (linkedLeft) conn.classList.add('conn-end');
-                    else if (linkedRight) conn.classList.add('conn-start');
-                    else conn.classList.add('connector-single');
+                    const conn = document.createElement('div'); conn.className = 'connector-bar connector-single';
                     dayWrapper.appendChild(conn);
                 }
                 dayWrapper.onmousedown = (e) => { SFX.click(); isDragging = true; dragStart = currStr; dragEnd = currStr; selectedDate = currStr; renderCalendar(); renderTasks(); };
@@ -428,9 +624,7 @@
                 dayWrapper.appendChild(dayBox); calendarGrid.appendChild(dayWrapper);
             }
         }
-
         function renderDragVisuals() { document.querySelectorAll('.day-wrapper').forEach(w => { const d = w.dataset.date; if(!d) return; let s = dragStart < dragEnd ? dragStart : dragEnd; let e = dragStart > dragEnd ? dragStart : dragEnd; if (d >= s && d <= e) w.classList.add('drag-over'); else w.classList.remove('drag-over'); }); }
-        
         function executeMirroring() {
             document.querySelectorAll('.day-wrapper').forEach(w => w.classList.remove('drag-over'));
             if (!dragStart || !dragEnd || dragStart === dragEnd) return;
@@ -448,127 +642,52 @@
             SFX.confirm(); saveData(); renderCalendar(); notify("TIMELINE SYNCED");
         }
 
-        const taskContainer = document.getElementById('taskContainer');
-        const dateDisplay = document.getElementById('selectedDateDisplay');
-        const subtitleDisplay = document.getElementById('selectedDateSubtitle');
-
-        function renderTasks() {
-            const d = new Date(selectedDate);
-            dateDisplay.innerText = d.toLocaleDateString('tr-TR', { weekday: 'long' });
-            subtitleDisplay.innerText = d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-            taskContainer.innerHTML = '';
-            
-            if(!db.calendar) db.calendar = {};
-            if(!db.tasks) db.tasks = {};
-
-            const ids = db.calendar[selectedDate] || [];
-            ids.forEach((id, index) => { const task = db.tasks[id]; if(task) createTaskDOM(id, task, index); });
-        }
-
-        function createTaskDOM(id, task, index) {
-            const isLinked = Object.values(db.calendar).filter(l => l.includes(id)).length > 1;
-            const card = document.createElement('div'); card.className = `task-card ${task.done ? 'completed' : ''}`;
-            card.onmouseenter = () => SFX.hover();
-            card.innerHTML = `
-                ${isLinked ? '<div class="shared-badge">LINKED</div>' : ''}
-                <div class="task-header">
-                    <div class="main-checkbox ${task.done ? 'checked' : ''}" onclick="SFX.click(); toggleTask('${id}')"></div>
-                    <input class="task-title-input" id="task-${index}" value="${task.title}" placeholder="TASK..." 
-                        oninput="updateTitle('${id}', this.value)" 
-                        onkeydown="handleEnterTask(event, ${index})">
-                    <div class="btn-group">
-                        ${isLinked ? `<button class="action-btn unlink-btn" onclick="unlinkTask('${id}', ${index})">[UNLINK]</button>` : ''}
-                        <button class="action-btn delete-btn" onclick="SFX.click(); removeTask('${id}', ${index})">[DELETE]</button>
-                    </div>
-                </div>
-                <div class="subtask-list" id="subs-${id}"></div>
-                <div class="subtask-list" style="border:none; margin-top:5px;">
-                   <span style="font-size:0.75rem; opacity:0.6; cursor:pointer;" onclick="SFX.click(); addSubManual('${id}')">> ADD DETAIL</span>
-                </div>
-            `;
-            taskContainer.appendChild(card);
-            const subContainer = card.querySelector(`#subs-${id}`);
-            if(task.subtasks) {
-                task.subtasks.forEach((sub, sIdx) => {
-                    const row = document.createElement('div'); row.className = 'subtask-item';
-                    row.innerHTML = `
-                        <div class="mini-checkbox ${sub.done ? 'checked' : ''}" onclick="SFX.click(); toggleSub('${id}', ${sIdx})"></div>
-                        <input class="subtask-input" id="sub-${id}-${sIdx}" value="${sub.title}" 
-                            oninput="updateSub('${id}', ${sIdx}, this.value)"
-                            onkeydown="handleEnterSub(event, '${id}', ${sIdx})">
-                        <span class="sub-del-btn" onclick="SFX.click(); removeSubTask('${id}', ${sIdx})">[x]</span>
-                    `;
-                    subContainer.appendChild(row);
-                });
-            }
-        }
-
-        function addNewTaskManual() {
-            if(!myID) return;
-            const newId = uuid(); 
-            if(!db.tasks) db.tasks = {};
-            db.tasks[newId] = { title: "", done: false, subtasks: [] };
-            if(!db.calendar) db.calendar = {};
-            if(!db.calendar[selectedDate]) db.calendar[selectedDate] = []; 
-            db.calendar[selectedDate].push(newId);
-            saveData(); 
-            renderTasks(); renderCalendar(); notify("SYSTEM: TASK INITIALIZED");
-            setTimeout(() => { const inputs = document.querySelectorAll('.task-title-input'); if(inputs.length) inputs[inputs.length - 1].focus(); }, 50);
-        }
-        function handleEnterTask(e, index) { if(e.key === 'Enter') { e.preventDefault(); SFX.confirm(); addNewTaskManual(); } }
-        function addSubManual(taskId) {
-            if(!db.tasks[taskId].subtasks) db.tasks[taskId].subtasks = [];
-            db.tasks[taskId].subtasks.push({ title: "", done: false }); saveData(); renderTasks();
-            setTimeout(() => { const subInputs = document.querySelectorAll(`#subs-${taskId} .subtask-input`); if(subInputs.length) subInputs[subInputs.length - 1].focus(); }, 50);
-        }
-        function handleEnterSub(e, taskId, sIdx) {
-            if(e.key === 'Enter') { e.preventDefault(); SFX.confirm(); 
-                if(!db.tasks[taskId].subtasks) db.tasks[taskId].subtasks = [];
-                db.tasks[taskId].subtasks.splice(sIdx + 1, 0, { title: "", done: false }); saveData(); renderTasks();
-                setTimeout(() => { const el = document.getElementById(`sub-${taskId}-${sIdx + 1}`); if(el) el.focus(); }, 50);
-            }
-        }
-        function updateTitle(id, val) { db.tasks[id].title = val; saveData(); }
-        function toggleTask(id) { db.tasks[id].done = !db.tasks[id].done; saveData(); renderTasks(); }
+        // --- SOUND & FX ---
+        const SFX = {
+            ctx: null,
+            init: function() { if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } if (this.ctx.state === 'suspended') { this.ctx.resume(); } },
+            playTone: function(freq, type, duration, vol=0.1) { this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freq, this.ctx.currentTime); gain.gain.setValueAtTime(vol, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration); osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + duration); },
+            hover: function() { this.playTone(800, 'sine', 0.03, 0.02); },
+            click: function() { this.playTone(1200, 'square', 0.05, 0.05); },
+            confirm: function() { this.playTone(800, 'sine', 0.1, 0.1); setTimeout(() => this.playTone(1200, 'sine', 0.1, 0.1), 50); },
+            delete: function() { this.playTone(150, 'sawtooth', 0.15, 0.08); },
+            unlink: function() { this.playTone(2000, 'triangle', 0.1, 0.05); setTimeout(() => this.playTone(500, 'square', 0.1, 0.05), 50); },
+        };
+        document.addEventListener('click', () => SFX.init(), { once: true });
+        function notify(msg) { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = `<span class="toast-prefix">[SYSTEM]:</span> ${msg}`; container.appendChild(toast); setTimeout(() => { toast.classList.add('hiding'); toast.addEventListener('animationend', () => toast.remove()); }, 3000); }
         
-        function removeTask(id, idx) { 
-            openModal("TERMINATE TASK", "THIS ACTION IS IRREVERSIBLE.", [{ text: "[CONFIRM]", class: "btn-primary", sfx: "delete", action: () => {
-                db.calendar[selectedDate].splice(idx, 1);
-                const inUse = Object.values(db.calendar).some(arr => arr.includes(id));
-                if(!inUse) delete db.tasks[id];
-                SFX.delete(); saveData(); renderTasks(); renderCalendar(); notify("TASK TERMINATED");
-            }}]);
-        }
-
-        function unlinkTask(id, idx) {
-            openModal("BREAK LINK CHAIN", "CHOOSE LINK DESTRUCTION METHOD:", [
-                { text: "[ONLY TODAY]", class: "btn-link", sfx: "unlink", action: () => {
-                    db.calendar[selectedDate].splice(idx, 1);
-                    saveData(); renderTasks(); renderCalendar(); notify("LINK SEVERED (LOCAL)");
-                }},
-                { text: "[WIPE OTHERS]", class: "btn-danger", sfx: "wipe", action: () => {
-                    removeLinksExceptCurrent(id);
-                    saveData(); renderTasks(); renderCalendar(); notify("OTHERS WIPED (KEPT HERE)");
-                }}
-            ]);
-        }
-
-        function removeLinksExceptCurrent(id) {
-            for (const date in db.calendar) {
-                if (date === selectedDate) continue; 
-                db.calendar[date] = db.calendar[date].filter(taskId => taskId !== id);
-                if(db.calendar[date].length === 0) delete db.calendar[date];
+        const canvas = document.getElementById('trail-canvas'); const ctx = canvas.getContext('2d'); let width, height;
+        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
+        window.addEventListener('resize', resize); resize();
+        let points = []; let mouse = { x: 0, y: 0 };
+        document.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; points.push({ x: mouse.x, y: mouse.y, age: 1.0 }); });
+        function animateTrail() {
+            ctx.clearRect(0, 0, width, height);
+            for (let i = points.length - 1; i >= 0; i--) { points[i].age -= 0.05; if (points[i].age <= 0) points.splice(i, 1); }
+            if (points.length > 2) {
+                ctx.beginPath(); const head = points[points.length - 1]; ctx.moveTo(head.x, head.y);
+                for (let i = points.length - 2; i >= 0; i--) { const p = points[i]; const nextP = points[i+1]; const dx = nextP.x - p.x; const dy = nextP.y - p.y; const len = Math.sqrt(dx*dx + dy*dy) || 1; const nx = -dy / len; const ny = dx / len; const w = p.age * 4; ctx.lineTo(p.x + nx * w, p.y + ny * w); }
+                ctx.stroke();
             }
+            requestAnimationFrame(animateTrail);
         }
-
-        function removeSubTask(id, sIdx) {
-            openModal("REMOVE DETAIL", "DELETE THIS LINE?", [{ text: "[DELETE]", class: "btn-primary", sfx: "delete", action: () => {
-                db.tasks[id].subtasks.splice(sIdx, 1);
-                SFX.delete(); saveData(); renderTasks(); notify("DETAIL REMOVED");
-            }}]);
+        animateTrail();
+        
+        // --- DINAMIK MODAL (Eksik kalan kısım) ---
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalActions = document.getElementById('modal-actions');
+        function openModal(title, desc, buttons) {
+            SFX.click(); modalTitle.innerText = title; modalDesc.innerText = desc; modalActions.innerHTML = '';
+            const cancelBtn = document.createElement('button'); cancelBtn.className = 'modal-btn'; cancelBtn.innerText = '[CANCEL]'; cancelBtn.onclick = () => { SFX.click(); document.getElementById('modal-overlay').classList.remove('active'); setTimeout(() => { document.getElementById('modal-overlay').style.display = 'none'; }, 200); }; modalActions.appendChild(cancelBtn);
+            buttons.forEach(btn => {
+                const b = document.createElement('button'); b.className = `modal-btn ${btn.class || ''}`; b.innerText = btn.text;
+                b.onclick = () => { if(btn.sfx) SFX[btn.sfx](); else SFX.click(); if(btn.action) btn.action(); document.getElementById('modal-overlay').classList.remove('active'); setTimeout(() => { document.getElementById('modal-overlay').style.display = 'none'; }, 200); };
+                modalActions.appendChild(b);
+            });
+            document.getElementById('modal-overlay').style.display = 'flex'; setTimeout(() => document.getElementById('modal-overlay').classList.add('active'), 10);
         }
-        function updateSub(id, sIdx, val) { db.tasks[id].subtasks[sIdx].title = val; saveData(); }
-        function toggleSub(id, sIdx) { const s = db.tasks[id].subtasks[sIdx]; s.done = !s.done; saveData(); renderTasks(); }
 
         renderCalendar();
     </script>
