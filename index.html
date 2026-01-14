@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NocDeepFocus Studio</title>
+    <title>Noc DeepFocus</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
@@ -48,7 +48,7 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* LOGIN SCREEN FIXES */
+        /* LOGIN SCREEN FIXES & SMOOTH ANIMATION */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 999999;
@@ -57,39 +57,50 @@
         .login-box {
             border: 1px solid var(--text-main); padding: 40px; text-align: center;
             box-shadow: 0 0 30px rgba(255,255,255,0.1); width: 400px;
-            background: #000; /* İSTEK: SİYAH OLSUN */
+            background: #000;
             position: relative;
+            overflow: hidden; /* Animasyonların dışarı taşmasını engeller */
         }
         .login-input {
             background: transparent; border: 1px solid var(--text-muted); color: #fff;
             padding: 10px; width: 100%; margin: 0; font-size: 1.2rem; text-align: center; outline: none;
             text-transform: uppercase;
+            transition: all 0.3s ease;
         }
         .login-input:focus { border-color: var(--link-color); box-shadow: 0 0 10px var(--link-color); }
-        .login-input:disabled { opacity: 0.5; border-color: #333; cursor: not-allowed; }
+        .login-input:disabled { opacity: 0.5; border-color: #333; cursor: not-allowed; color: #666; }
 
         .login-btn {
             background: var(--text-main); color: #000; border: none; padding: 10px 30px; margin-top: 15px;
-            font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; width: 100%;
+            font-weight: bold; cursor: pointer; font-size: 1rem; width: 100%;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Yumuşak geçiş */
         }
         .login-btn:hover { background: #fff; transform: scale(1.02); }
 
-        /* CLONING ANIMATION FOR PASSWORD */
-        #id-container { position: relative; z-index: 2; transition: 0.3s; }
+        /* BUTON GİZLENME EFEKTİ */
+        .login-btn.vanish {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            margin-top: -40px; /* Yer kaplamasını engellemek için yukarı çeker */
+        }
+
+        /* PASSWORD CONTAINER ANIMATION */
+        #id-container { position: relative; z-index: 2; transition: 0.3s; margin-bottom: 0; }
         
         #pass-wrapper {
             overflow: hidden;
             max-height: 0;
             opacity: 0;
-            transform: translateY(-20px) scale(0.95); /* Yukarıdan ve küçük başla */
-            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); /* Yavaşça süzülme efekti */
+            transform: translateY(-10px); 
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             margin-top: 0;
         }
         
         #pass-wrapper.cloned {
-            max-height: 200px;
+            max-height: 150px; /* Yeterli alan aç */
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0);
             margin-top: 15px;
         }
 
@@ -99,7 +110,6 @@
             text-align: center; color: red; font-weight: bold;
             display: flex; justify-content: space-between; align-items: center;
         }
-        /* Matrix modunda admin paneli de uyumlu olsun */
         body.matrix-mode #admin-panel { background: #001100; border-color: #00ff00; color: #00ff00; }
 
         .user-select {
@@ -149,7 +159,6 @@
         .day-box.active { background-color: var(--text-muted); color: #000; font-weight: bold; border-radius: 4px; }
         .connector-bar { position: absolute; bottom: 4px; height: 2px; background-color: var(--text-main); z-index: 1; }
         .connector-single { width: 4px; height: 4px; bottom: 3px; background-color: var(--text-main); }
-        .conn-left { left: 0; width: 50%; } .conn-right { right: 0; width: 50%; } .conn-full { left: 0; width: 100%; } .conn-start { left: 50%; width: 50%; } .conn-end { right: 50%; width: 50%; }
 
         .main-content { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-color); display: flex; flex-direction: column; transition: background-color 0.5s ease; }
         .date-title { font-size: 1.8rem; margin-bottom: 5px; font-weight: bold; color: var(--text-main); text-transform: uppercase; }
@@ -262,7 +271,7 @@
     <div class="fab" onmouseenter="SFX.hover()" onclick="SFX.confirm(); addNewTaskManual()">+</div>
 
     <script>
-        // --- 1. FIREBASE CONFIGURATION ---
+        // --- 1. FIREBASE CONFIGURATION (BURAYA KENDİ KODUNU YAPIŞTIR) ---
         const firebaseConfig = {
             apiKey: "AIzaSyCgU19zUSLVSHJSe-0umJISerM1zUR0GRk",
             authDomain: "deepfocus-f8668.firebaseapp.com",
@@ -275,8 +284,8 @@
         };
 
         // --- AYARLAR ---
-        const ADMIN_ID = "KURUCU";  
-        const ADMIN_PASS = "1234";  
+        const ADMIN_ID = "TUNA";  
+        const ADMIN_PASS = "1903";  
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -310,14 +319,18 @@
             if(!val) return;
             
             if(val === ADMIN_ID) {
-                // Admin ise şifre alanını "KLONLA"
+                // Admin ise şifre alanını aç, butonu YAVAŞÇA yok et
                 input.disabled = true; // Üstteki ID kilitlenir
-                document.getElementById('id-btn').style.display = 'none'; // Butonu gizle
+                
+                // Flicker olmaması için "vanish" class'ı ekleyip CSS ile yok ediyoruz
+                const btn = document.getElementById('id-btn');
+                btn.classList.add('vanish');
                 
                 const passWrap = document.getElementById('pass-wrapper');
                 passWrap.classList.add('cloned'); // Animasyonu başlat
                 
-                setTimeout(() => document.getElementById('login-pass').focus(), 500);
+                // Focus'u bekleterek ver
+                setTimeout(() => document.getElementById('login-pass').focus(), 400);
                 SFX.click();
             } else {
                 completeLogin(val);
@@ -343,7 +356,7 @@
             document.getElementById('current-user-display').innerText = myID;
             document.getElementById('login-overlay').style.display = 'none';
             
-            // Başlangıçta Matrix Modu KAPALI (İstek 2)
+            // Başlangıçta Matrix Modu KAPALI
             document.body.classList.remove('matrix-mode');
 
             if(myID === ADMIN_ID) {
@@ -354,11 +367,9 @@
         }
 
         // --- MATRIX EFFECT / WATCHDOG MODE ---
-        // Bu sadece adminken başkasının ekranına bakınca çalışacak (İstek 3)
         function toggleMatrixMode(state) {
             if(state) {
                 document.body.classList.add('matrix-mode');
-                // Sadece text scramble efekti yapalım
                 const targets = document.querySelectorAll('.scramble-target, .day-header, .date-title, #monthDisplay');
                 targets.forEach(el => scrambleText(el));
             } else {
@@ -706,4 +717,3 @@
     </script>
 </body>
 </html>
-
