@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepFocus Studio V3</title>
+    <title>DeepFocus Studio V3.1</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <style>
         :root {
+            /* DEFAULT THEME */
             --bg-color: #1a1a1a;       
             --sidebar-bg: #212121;     
             --card-bg: #2a2a2a;        
@@ -21,18 +22,18 @@
             --border: #404040;         
         }
 
-        /* MATRIX / HACKER MODE VARIABLES */
+        /* MATRIX / WATCHDOG MODE VARIABLES */
         body.matrix-mode {
             --bg-color: #000000 !important;
-            --sidebar-bg: #051a05 !important;
-            --card-bg: #0a2a0a !important;
-            --hover-bg: #0f3a0f !important;
+            --sidebar-bg: #001100 !important;
+            --card-bg: #002200 !important;
+            --hover-bg: #003300 !important;
             --text-main: #00ff00 !important;
-            --text-muted: #00cc00 !important;
+            --text-muted: #008800 !important;
             --accent: #00ff00 !important;
             --link-color: #00ff00 !important;
-            --danger-color: #00ff00 !important;
-            --border: #004400 !important;
+            --danger-color: #ff0000 !important;
+            --border: #005500 !important;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; user-select: none; }
@@ -44,10 +45,10 @@
             height: 100vh;
             overflow: hidden;
             cursor: default;
-            transition: background-color 2s ease, color 2s ease; /* EFEKT GEÇİŞİ */
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* LOGIN SCREEN */
+        /* LOGIN SCREEN FIXES */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 999999;
@@ -56,23 +57,41 @@
         .login-box {
             border: 1px solid var(--text-main); padding: 40px; text-align: center;
             box-shadow: 0 0 30px rgba(255,255,255,0.1); width: 400px;
-            background: #111;
+            background: #000; /* İSTEK: SİYAH OLSUN */
+            position: relative;
         }
         .login-input {
             background: transparent; border: 1px solid var(--text-muted); color: #fff;
-            padding: 10px; width: 100%; margin: 10px 0; font-size: 1.2rem; text-align: center; outline: none;
+            padding: 10px; width: 100%; margin: 0; font-size: 1.2rem; text-align: center; outline: none;
             text-transform: uppercase;
         }
         .login-input:focus { border-color: var(--link-color); box-shadow: 0 0 10px var(--link-color); }
-        .login-btn {
-            background: var(--text-main); color: #000; border: none; padding: 10px 30px; margin-top: 20px;
-            font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s;
-        }
-        .login-btn:hover { background: #fff; transform: scale(1.05); }
+        .login-input:disabled { opacity: 0.5; border-color: #333; cursor: not-allowed; }
 
-        /* PASSWORD FIELD (Hidden by default) */
-        #pass-container { display: none; opacity: 0; transition: opacity 0.5s; }
-        #pass-container.visible { display: block; opacity: 1; }
+        .login-btn {
+            background: var(--text-main); color: #000; border: none; padding: 10px 30px; margin-top: 15px;
+            font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; width: 100%;
+        }
+        .login-btn:hover { background: #fff; transform: scale(1.02); }
+
+        /* CLONING ANIMATION FOR PASSWORD */
+        #id-container { position: relative; z-index: 2; transition: 0.3s; }
+        
+        #pass-wrapper {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-20px) scale(0.95); /* Yukarıdan ve küçük başla */
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1); /* Yavaşça süzülme efekti */
+            margin-top: 0;
+        }
+        
+        #pass-wrapper.cloned {
+            max-height: 200px;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            margin-top: 15px;
+        }
 
         /* ADMIN PANEL */
         #admin-panel {
@@ -80,17 +99,17 @@
             text-align: center; color: red; font-weight: bold;
             display: flex; justify-content: space-between; align-items: center;
         }
-        body.matrix-mode #admin-panel { background: #002200; color: #00ff00; border-color: #00ff00; }
+        /* Matrix modunda admin paneli de uyumlu olsun */
+        body.matrix-mode #admin-panel { background: #001100; border-color: #00ff00; color: #00ff00; }
 
         .user-select {
             background: #000; color: #fff; border: 1px solid red; padding: 5px; margin-left: 10px;
         }
         body.matrix-mode .user-select { border-color: #00ff00; color: #00ff00; }
 
-        /* CANVAS & FX */
+        /* STANDART UI */
         #trail-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99990; mix-blend-mode: screen; }
         
-        /* MODAL */
         #modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
@@ -109,19 +128,14 @@
         .modal-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .modal-btn { padding: 10px 20px; cursor: pointer; font-weight: bold; font-size: 0.85rem; border: 1px solid var(--text-muted); color: var(--text-muted); background: transparent; transition: 0.2s; }
         .modal-btn:hover { border-color: var(--text-main); color: var(--text-main); transform: translateY(-2px); }
-        .btn-primary { border-color: var(--text-main); background: var(--text-main); color: var(--bg-color); }
-        .btn-danger { border-color: var(--danger-color); color: var(--danger-color); }
-        .btn-danger:hover { background: var(--danger-color); color: #fff; }
 
-        /* TOAST */
         #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column-reverse; gap: 10px; z-index: 100000; pointer-events: none; }
         .toast { background-color: var(--bg-color); border: 1px solid var(--text-main); color: var(--text-main); padding: 10px 20px; font-size: 0.85rem; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: toastIn 0.3s forwards; opacity: 0; display: flex; align-items: center; gap: 10px; min-width: 300px; }
         .toast.hiding { animation: toastOut 0.3s forwards; }
         @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes toastOut { to { transform: translateY(10px); opacity: 0; } }
 
-        /* UI */
-        .sidebar { width: 300px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px; z-index: 10; position: relative; transition: background-color 2s ease; }
+        .sidebar { width: 300px; background-color: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px; z-index: 10; position: relative; transition: background-color 0.5s ease; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
         #monthDisplay { font-size: 1rem; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 2px; }
         .nav-btn { cursor: pointer; padding: 5px 10px; font-weight: bold; color: var(--text-muted); transition: color 0.2s; }
@@ -137,7 +151,7 @@
         .connector-single { width: 4px; height: 4px; bottom: 3px; background-color: var(--text-main); }
         .conn-left { left: 0; width: 50%; } .conn-right { right: 0; width: 50%; } .conn-full { left: 0; width: 100%; } .conn-start { left: 50%; width: 50%; } .conn-end { right: 50%; width: 50%; }
 
-        .main-content { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-color); display: flex; flex-direction: column; transition: background-color 2s ease; }
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; background-color: var(--bg-color); display: flex; flex-direction: column; transition: background-color 0.5s ease; }
         .date-title { font-size: 1.8rem; margin-bottom: 5px; font-weight: bold; color: var(--text-main); text-transform: uppercase; }
         .date-subtitle { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 30px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
         .task-container { display: flex; flex-direction: column; gap: 12px; padding-bottom: 100px; }
@@ -187,10 +201,10 @@
             
             <div id="id-container">
                 <input type="text" id="login-id" class="login-input" placeholder="ENTER ID">
-                <button class="login-btn" onclick="checkID()">NEXT ></button>
+                <button id="id-btn" class="login-btn" onclick="checkID()">NEXT ></button>
             </div>
 
-            <div id="pass-container">
+            <div id="pass-wrapper">
                 <input type="password" id="login-pass" class="login-input" placeholder="ACCESS CODE">
                 <button class="login-btn" onclick="verifyPassword()">INITIALIZE SYSTEM</button>
             </div>
@@ -248,7 +262,7 @@
     <div class="fab" onmouseenter="SFX.hover()" onclick="SFX.confirm(); addNewTaskManual()">+</div>
 
     <script>
-        // --- 1. FIREBASE CONFIGURATION (BURAYA KENDİ KODUNU YAPIŞTIR) ---
+        // --- 1. FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyCgU19zUSLVSHJSe-0umJISerM1zUR0GRk",
             authDomain: "deepfocus-f8668.firebaseapp.com",
@@ -261,8 +275,8 @@
         };
 
         // --- AYARLAR ---
-        const ADMIN_ID = "KURUCU";  // GİRİŞ ID'Sİ
-        const ADMIN_PASS = "1234";  // GİZLİ ŞİFRE
+        const ADMIN_ID = "KURUCU";  
+        const ADMIN_PASS = "1234";  
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -275,12 +289,12 @@
         let selectedDate = new Date().toISOString().split('T')[0];
         let currentViewDate = new Date();
 
-        // --- SESSION CONTROL (AUTO LOGIN) ---
+        // --- SESSION CONTROL ---
         window.onload = function() {
             const savedID = localStorage.getItem('deepFocusUser');
             if(savedID) {
                 myID = savedID;
-                completeLogin(savedID, false); // False = Efekt yapma (direkt gir)
+                completeLogin(savedID);
             }
         };
 
@@ -291,18 +305,22 @@
 
         // --- LOGIN FLOW ---
         function checkID() {
-            const input = document.getElementById('login-id').value.trim().toUpperCase();
-            if(!input) return;
+            const input = document.getElementById('login-id');
+            const val = input.value.trim().toUpperCase();
+            if(!val) return;
             
-            if(input === ADMIN_ID) {
-                // Admin ise şifre sor
-                document.getElementById('id-container').style.display = 'none';
-                document.getElementById('pass-container').classList.add('visible');
-                document.getElementById('login-pass').focus();
+            if(val === ADMIN_ID) {
+                // Admin ise şifre alanını "KLONLA"
+                input.disabled = true; // Üstteki ID kilitlenir
+                document.getElementById('id-btn').style.display = 'none'; // Butonu gizle
+                
+                const passWrap = document.getElementById('pass-wrapper');
+                passWrap.classList.add('cloned'); // Animasyonu başlat
+                
+                setTimeout(() => document.getElementById('login-pass').focus(), 500);
                 SFX.click();
             } else {
-                // Normal kullanıcı direkt girer
-                completeLogin(input, false);
+                completeLogin(val);
             }
         }
 
@@ -310,7 +328,7 @@
             const pass = document.getElementById('login-pass').value;
             if(pass === ADMIN_PASS) {
                 SFX.confirm();
-                completeLogin(ADMIN_ID, true); // True = MATRIX EFFECT
+                completeLogin(ADMIN_ID); 
             } else {
                 SFX.delete();
                 alert("ACCESS DENIED");
@@ -318,16 +336,15 @@
             }
         }
 
-        function completeLogin(id, withEffect) {
+        function completeLogin(id) {
             myID = id;
             viewingID = id;
-            localStorage.setItem('deepFocusUser', myID); // Şifreyi kaydet
+            localStorage.setItem('deepFocusUser', myID); 
             document.getElementById('current-user-display').innerText = myID;
             document.getElementById('login-overlay').style.display = 'none';
             
-            if(withEffect) {
-                triggerMatrixEffect();
-            }
+            // Başlangıçta Matrix Modu KAPALI (İstek 2)
+            document.body.classList.remove('matrix-mode');
 
             if(myID === ADMIN_ID) {
                 initAdminPanel();
@@ -336,24 +353,22 @@
             listenToData(viewingID);
         }
 
-        // --- MATRIX EFFECT ---
-        function triggerMatrixEffect() {
-            document.body.classList.add('matrix-mode');
-            
-            // Text scramble effect
-            const targets = document.querySelectorAll('.scramble-target, .day-header, .date-title, #monthDisplay');
-            targets.forEach(el => scrambleText(el));
-
-            // 2 Saniye sonra normale dön
-            setTimeout(() => {
+        // --- MATRIX EFFECT / WATCHDOG MODE ---
+        // Bu sadece adminken başkasının ekranına bakınca çalışacak (İstek 3)
+        function toggleMatrixMode(state) {
+            if(state) {
+                document.body.classList.add('matrix-mode');
+                // Sadece text scramble efekti yapalım
+                const targets = document.querySelectorAll('.scramble-target, .day-header, .date-title, #monthDisplay');
+                targets.forEach(el => scrambleText(el));
+            } else {
                 document.body.classList.remove('matrix-mode');
-                notify("SYSTEM RESTORED");
-            }, 2000);
+            }
         }
 
         function scrambleText(element) {
             const originalText = element.innerText;
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             let iteration = 0;
             const interval = setInterval(() => {
                 element.innerText = originalText.split("")
@@ -364,7 +379,7 @@
                     .join("");
                 
                 if(iteration >= originalText.length) clearInterval(interval);
-                iteration += 1 / 2; // Hız
+                iteration += 1 / 2; 
             }, 30);
         }
 
@@ -416,6 +431,14 @@
 
         function switchUserView(targetUser) {
             viewingID = targetUser;
+            
+            // Eğer Admin isen ve başkasının profiline bakıyorsan -> MATRIX MODE ON
+            if(myID === ADMIN_ID && viewingID !== ADMIN_ID) {
+                toggleMatrixMode(true);
+            } else {
+                toggleMatrixMode(false);
+            }
+
             listenToData(viewingID);
             SFX.click();
             notify(`VIEW SWITCHED: ${targetUser}`);
@@ -440,19 +463,16 @@
             
             const container = document.getElementById('taskContainer');
             
-            // --- FOCUS SAVER (İmleci kaybetmemek için) ---
             const activeEl = document.activeElement;
             const activeId = activeEl ? activeEl.id : null;
             const cursorStart = activeEl ? activeEl.selectionStart : 0;
             const cursorEnd = activeEl ? activeEl.selectionEnd : 0;
-            // ---------------------------------------------
 
             container.innerHTML = '';
             
             const ids = db.calendar[selectedDate] || [];
             ids.forEach((id, index) => { const task = db.tasks[id]; if(task) createTaskDOM(id, task, index); });
 
-            // --- FOCUS RESTORE (İmleci geri yükle) ---
             if(activeId) {
                 const el = document.getElementById(activeId);
                 if(el) {
@@ -501,12 +521,10 @@
             }
         }
 
-        // --- DATA HANDLERS ---
         const uuid = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
 
         function updateTitle(id, val) { 
             db.tasks[id].title = val; 
-            // Save data yapıyoruz ama renderTasks Firebase'den tetiklenecek
             saveData(); 
         }
 
@@ -519,7 +537,6 @@
             if(!db.calendar[selectedDate]) db.calendar[selectedDate] = []; 
             db.calendar[selectedDate].push(newId);
             saveData(); 
-            // Yeni task eklendiğinde focus'u ona verelim (Render sonrası)
             setTimeout(() => { 
                 const el = document.getElementById(`task-${newId}`);
                 if(el) el.focus();
@@ -531,7 +548,6 @@
         function addSubManual(taskId) {
             if(!db.tasks[taskId].subtasks) db.tasks[taskId].subtasks = [];
             db.tasks[taskId].subtasks.push({ title: "", done: false }); saveData();
-            // Focus yeni subtaska
             setTimeout(() => { 
                 const len = db.tasks[taskId].subtasks.length - 1;
                 const el = document.getElementById(`sub-${taskId}-${len}`);
@@ -591,7 +607,6 @@
             }}]);
         }
 
-        // --- CALENDAR LOGIC (UNCHANGED) ---
         let isDragging = false, dragStart = null, dragEnd = null;
         const calendarGrid = document.getElementById('calendarGrid');
         const monthDisplay = document.getElementById('monthDisplay');
@@ -642,7 +657,6 @@
             SFX.confirm(); saveData(); renderCalendar(); notify("TIMELINE SYNCED");
         }
 
-        // --- SOUND & FX ---
         const SFX = {
             ctx: null,
             init: function() { if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } if (this.ctx.state === 'suspended') { this.ctx.resume(); } },
@@ -673,7 +687,6 @@
         }
         animateTrail();
         
-        // --- DINAMIK MODAL (Eksik kalan kısım) ---
         const modalOverlay = document.getElementById('modal-overlay');
         const modalTitle = document.getElementById('modal-title');
         const modalDesc = document.getElementById('modal-desc');
