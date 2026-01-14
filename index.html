@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Noc DeepFocus</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     
@@ -36,7 +36,7 @@
             --border: #005500 !important;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; user-select: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg-color);
@@ -48,6 +48,23 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
+        /* --- MOBILE RESPONSIVE TWEAKS --- */
+        .mobile-menu-btn { display: none; position: fixed; top: 15px; left: 15px; z-index: 99900; background: var(--bg-color); border: 1px solid var(--text-main); color: var(--text-main); padding: 5px 10px; font-weight: bold; cursor: pointer; }
+        
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .mobile-menu-btn { display: block; }
+            .sidebar { 
+                position: fixed; left: -100%; top: 0; height: 100%; width: 85%; 
+                transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 10px 0 50px rgba(0,0,0,0.8);
+            }
+            .sidebar.active { left: 0; }
+            .main-content { width: 100%; padding: 60px 20px 20px 20px; } /* Top padding for menu btn */
+            .chat-box { width: 95% !important; left: 2.5% !important; bottom: 10px !important; height: 60vh !important; }
+            .task-header { flex-wrap: wrap; }
+            .btn-group { margin-left: 0; margin-top: 5px; width: 100%; justify-content: flex-end; }
+        }
+
         /* LOGIN SCREEN */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -56,16 +73,13 @@
         }
         .login-box {
             border: 1px solid var(--text-main); padding: 40px; text-align: center;
-            box-shadow: 0 0 30px rgba(255,255,255,0.1); width: 400px;
-            background: #000;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255,255,255,0.1); width: 90%; max-width: 400px;
+            background: #000; position: relative; overflow: hidden;
         }
         .login-input {
             background: transparent; border: 1px solid var(--text-muted); color: #fff;
             padding: 10px; width: 100%; margin: 0; font-size: 1.2rem; text-align: center; outline: none;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
+            text-transform: uppercase; transition: all 0.3s ease;
         }
         .login-input:focus { border-color: var(--link-color); box-shadow: 0 0 10px var(--link-color); }
         .login-input:disabled { opacity: 0.5; border-color: #333; cursor: not-allowed; color: #666; }
@@ -95,7 +109,7 @@
         }
         #modal-overlay.active { opacity: 1; }
         .modal-box {
-            background: var(--bg-color); border: 1px solid var(--text-main); padding: 30px; width: 450px;
+            background: var(--bg-color); border: 1px solid var(--text-main); padding: 30px; width: 90%; max-width: 450px;
             text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(0.9);
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -211,21 +225,33 @@
         .chat-messages::-webkit-scrollbar { width: 5px; }
         .chat-messages::-webkit-scrollbar-thumb { background: var(--border); }
 
-        .chat-msg { padding: 5px 8px; border-radius: 4px; max-width: 90%; word-break: break-word; }
+        .chat-msg { 
+            padding: 5px 8px; border-radius: 4px; max-width: 90%; word-break: break-word; 
+            user-select: text !important; /* SEÇİLEBİLİR METİN İZNİ */
+        }
         .chat-msg.me { align-self: flex-end; background: var(--text-muted); color: #000; text-align: right; }
         .chat-msg.other { align-self: flex-start; background: #222; border: 1px solid #333; color: var(--text-main); }
         .msg-sender { font-size: 0.65rem; opacity: 0.6; display: block; margin-bottom: 2px; }
+        
+        /* MEDIA IN CHAT */
+        .chat-img { max-width: 100%; border-radius: 4px; margin-top: 5px; cursor: pointer; }
+        .chat-video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin-top:5px; background:#000; }
+        .chat-video-container iframe, .chat-video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
         .chat-input-area {
-            padding: 8px; border-top: 1px solid var(--border); display: flex; gap: 5px; background: var(--sidebar-bg);
+            padding: 8px; border-top: 1px solid var(--border); display: flex; gap: 5px; background: var(--sidebar-bg); align-items: center;
         }
         .chat-input {
             flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 5px; font-size: 0.8rem; outline: none;
         }
         .chat-input:focus { border-color: var(--text-main); }
         .chat-send-btn {
-            background: var(--text-main); color: #000; border: none; font-weight: bold; cursor: pointer; padding: 0 10px; font-size: 0.8rem;
+            background: var(--text-main); color: #000; border: none; font-weight: bold; cursor: pointer; padding: 0 10px; font-size: 0.8rem; height: 28px;
         }
+        .chat-attach-btn {
+            background: #333; color: #fff; border: 1px solid #444; font-weight: bold; cursor: pointer; padding: 0 8px; font-size: 1rem; height: 28px;
+        }
+        .chat-attach-btn:hover { background: #555; }
 
         /* USER SELECTION MODAL STYLES */
         .user-search-input {
@@ -254,6 +280,8 @@
     </style>
 </head>
 <body>
+
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">[MENU]</button>
 
     <div id="login-overlay">
         <div class="login-box">
@@ -289,12 +317,14 @@
         <div class="chat-tabs" id="chat-tabs"></div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-area">
-            <input type="text" class="chat-input" id="chat-input" placeholder="Message..." onkeydown="if(event.key==='Enter') sendChat()">
+            <button class="chat-attach-btn" onclick="triggerFileUpload()" title="Send Image">📎</button>
+            <input type="file" id="file-input" accept="image/*" style="display:none;" onchange="handleFileUpload(this)">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Message or Video Link..." onkeydown="if(event.key==='Enter') sendChat()">
             <button class="chat-send-btn" onclick="sendChat()">></button>
         </div>
     </div>
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="calendar-header">
             <span class="nav-btn" onmouseenter="SFX.hover()" onclick="SFX.click(); changeMonth(-1)">&lt;</span>
             <span id="monthDisplay" class="scramble-target">...</span>
@@ -314,7 +344,7 @@
         </div>
     </aside>
 
-    <main class="main-content">
+    <main class="main-content" onclick="closeSidebarOnMobile()">
         <div id="admin-panel" style="display:none;">
             <span>⚠️ ADMIN MODE</span>
             <div>
@@ -373,7 +403,6 @@
 
         function logout() {
             localStorage.removeItem('deepFocusUser');
-            // localStorage.removeItem('nocOpenChatTabs'); // Keep tabs on logout?
             location.reload();
         }
 
@@ -419,6 +448,17 @@
             initChatSystem();
         }
 
+        // --- SIDEBAR TOGGLE (MOBILE) ---
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('active');
+        }
+        function closeSidebarOnMobile() {
+            if(window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        }
+
         // --- DB & CHAT SYSTEM ---
         let dbRef = null;
         function listenToData(targetID) {
@@ -446,6 +486,7 @@
                 unreadCount = 0; document.title = "Noc DeepFocus"; // Reset notification
                 const msgCont = document.getElementById('chat-messages');
                 msgCont.scrollTop = msgCont.scrollHeight;
+                if(window.innerWidth <= 768) closeSidebarOnMobile();
             } else {
                 box.style.display = 'none';
             }
@@ -509,7 +550,6 @@
                 container.appendChild(div);
             });
 
-            // Add Tab Button
             const addBtn = document.createElement('div');
             addBtn.className = 'add-tab-btn';
             addBtn.innerText = '+';
@@ -559,7 +599,6 @@
                 }
                 modalContentHTML += `</div>`;
 
-                // Use the custom HTML modal
                 const modalOverlay = document.getElementById('modal-overlay');
                 const modalTitle = document.getElementById('modal-title');
                 const modalDesc = document.getElementById('modal-desc');
@@ -567,7 +606,7 @@
                 
                 SFX.click();
                 modalTitle.innerText = "NEW CONNECTION";
-                modalDesc.innerHTML = modalContentHTML; // Inject HTML
+                modalDesc.innerHTML = modalContentHTML; 
                 modalActions.innerHTML = `<button class="modal-btn" onclick="closeModal()">[CANCEL]</button>`;
                 
                 modalOverlay.style.display = 'flex';
@@ -627,31 +666,82 @@
                     const div = document.createElement('div');
                     const isMe = msg.sender === myID;
                     div.className = `chat-msg ${isMe ? 'me' : 'other'}`;
-                    div.innerHTML = `<span class="msg-sender">${msg.sender}</span>${msg.text}`;
+                    
+                    let content = msg.text;
+                    if(msg.type === 'image') {
+                        content = `<img src="${msg.text}" class="chat-img" onclick="window.open(this.src)">`;
+                    } else if(isValidUrl(msg.text)) {
+                        if(isYoutube(msg.text)) {
+                            content = getYoutubeEmbed(msg.text);
+                        } else if(isVideoUrl(msg.text)) {
+                             content = `<div class="chat-video-container"><video controls src="${msg.text}"></video></div>`;
+                        } else {
+                            content = `<a href="${msg.text}" target="_blank" style="color:var(--link-color);text-decoration:underline;word-break:break-all;">${msg.text}</a>`;
+                        }
+                    }
+
+                    div.innerHTML = `<span class="msg-sender">${msg.sender}</span>${content}`;
                     msgContainer.appendChild(div);
                 });
                 msgContainer.scrollTop = msgContainer.scrollHeight;
             });
         }
 
-        function sendChat() {
+        // --- MEDIA & UPLOAD ---
+        function triggerFileUpload() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if(!file) return;
+
+            // Simple limit check (e.g. 500KB) because we use Realtime DB Base64
+            if(file.size > 500 * 1024) {
+                alert("FILE TOO LARGE (LIMIT 500KB). USE URL FOR LARGE FILES.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result;
+                sendChat(base64, 'image');
+            };
+            reader.readAsDataURL(file);
+            input.value = ""; // Reset
+        }
+
+        function sendChat(content = null, type = 'text') {
             const input = document.getElementById('chat-input');
-            const text = input.value.trim();
+            const text = content || input.value.trim();
             if(!text) return;
 
             const chanID = getChannelID(currentChatChannel);
             database.ref('chats/' + chanID).push({
-                sender: myID, text: text, timestamp: Date.now()
+                sender: myID, text: text, type: type, timestamp: Date.now()
             });
-            input.value = '';
+            
+            if(!content) input.value = '';
             SFX.click();
         }
+        
+        // --- MEDIA HELPERS ---
+        function isValidUrl(s) { try { new URL(s); return true; } catch(e){ return false; } }
+        function isYoutube(url) { return url.includes('youtube.com') || url.includes('youtu.be'); }
+        function getYoutubeEmbed(url) {
+            let vid = "";
+            if(url.includes('youtube.com')) vid = url.split('v=')[1].split('&')[0];
+            else if(url.includes('youtu.be')) vid = url.split('/').pop();
+            return `<div class="chat-video-container"><iframe src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe></div>`;
+        }
+        function isVideoUrl(url) { return url.match(/\.(mp4|webm|ogg)$/i); }
+
 
         function makeDraggable(elmnt) {
             var pos1=0,pos2=0,pos3=0,pos4=0;
             const header = document.getElementById("chat-header");
             if(header) header.onmousedown = dragMouseDown;
-            function dragMouseDown(e) { e=e||window.event; e.preventDefault(); pos3=e.clientX; pos4=e.clientY; document.onmouseup=closeDrag; document.onmousemove=elementDrag; }
+            function dragMouseDown(e) { e=e||window.event; if(e.target.id !== 'chat-header' && e.target.id !== 'chat-title') return; e.preventDefault(); pos3=e.clientX; pos4=e.clientY; document.onmouseup=closeDrag; document.onmousemove=elementDrag; }
             function elementDrag(e) { e=e||window.event; e.preventDefault(); pos1=pos3-e.clientX; pos2=pos4-e.clientY; pos3=e.clientX; pos4=e.clientY; elmnt.style.top=(elmnt.offsetTop-pos2)+"px"; elmnt.style.left=(elmnt.offsetLeft-pos1)+"px"; elmnt.style.bottom="auto"; }
             function closeDrag() { document.onmouseup=null; document.onmousemove=null; }
         }
